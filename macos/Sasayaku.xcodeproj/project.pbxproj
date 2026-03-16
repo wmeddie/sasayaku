@@ -1,0 +1,565 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		1738CC9AB43C88FA48FEAC41 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49F8140661A950225E579F65 /* AppDelegate.swift */; };
+		23E39E7C7739FA1F9872A4EF /* WindowTrackerMacOS.mm in Sources */ = {isa = PBXBuildFile; fileRef = ABDF3CD498A8310B04612154 /* WindowTrackerMacOS.mm */; };
+		27D4CC53939BC7D985419A94 /* openai_client.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E2EF715E5EBBE4C460B5C7F6 /* openai_client.cpp */; };
+		286CB8A7BDF68B0BE53C28EA /* whisper_wrapper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 88B00E511B0D7F65059660EC /* whisper_wrapper.cpp */; };
+		2F20806E499C4075B86D2815 /* recording_coordinator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 14FCB6FAB11165F43D51619C /* recording_coordinator.cpp */; };
+		38693706F732A9178100592D /* OverlayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C04D1E629ACEB2DC0DE4954 /* OverlayView.swift */; };
+		4655A712B5168E3282C28598 /* audio_processor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5069C84B513AAB3AA3D06421 /* audio_processor.cpp */; };
+		540F2FBB66CBE30099CFB017 /* ClipboardMacOS.mm in Sources */ = {isa = PBXBuildFile; fileRef = A7D1EB75EC56F9924AA46CF2 /* ClipboardMacOS.mm */; };
+		542DCE469A57E9CE6781F12B /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF920F4A7A7CD52566A213D9 /* SettingsView.swift */; };
+		5F805AD0A8AE9FE1914C6135 /* RecordingViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 053821A007521857C6D6C502 /* RecordingViewModel.swift */; };
+		64A01898AABF83B84A09588F /* mode_manager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 32E1C966109B7BEB34611BBE /* mode_manager.cpp */; };
+		6DF86120A59B6E86E74BF2E0 /* OverlayPanel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93191917FFB431E26335D094 /* OverlayPanel.swift */; };
+		995E54D5A8C016B18AB85764 /* AutoPasteMacOS.mm in Sources */ = {isa = PBXBuildFile; fileRef = 9255A7FDAEA05BCF08A925BF /* AutoPasteMacOS.mm */; };
+		9D839307DA04250D5D201A38 /* AudioCaptureMacOS.mm in Sources */ = {isa = PBXBuildFile; fileRef = C7B6ED4B614AA12586702B97 /* AudioCaptureMacOS.mm */; };
+		AD5DC31FA233095F384CC148 /* ModesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E4DE40433AA4D81A20B4C11 /* ModesView.swift */; };
+		B7576EFB40AEC950118C0A97 /* SasayakuBridge.mm in Sources */ = {isa = PBXBuildFile; fileRef = F355981A51952369A9CCC00B /* SasayakuBridge.mm */; };
+		C75665007C9681178C1C9FE1 /* SasayakuApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1D95501DB50917C70DBFEDC /* SasayakuApp.swift */; };
+		C8D9C4710E223632B415ABC2 /* HotkeyManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD94EBC4F376A90D35C3946A /* HotkeyManager.swift */; };
+		D2338140FEE36409F10EDE2D /* RecordingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 284157A88374D38E9BF51965 /* RecordingView.swift */; };
+		D85AE0CC455302063C7A3C88 /* config_manager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2B57EA54A95EAD0A073D541C /* config_manager.cpp */; };
+		D8E74410339C8AF98308A892 /* prompt_templates.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E69827A4CDD50615B1CEAB26 /* prompt_templates.cpp */; };
+		EC94F5916E91DCDAA77FEA2C /* transcription.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 96BC61A503D1363EB1EFA1C3 /* transcription.cpp */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		053821A007521857C6D6C502 /* RecordingViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordingViewModel.swift; sourceTree = "<group>"; };
+		0E4DE40433AA4D81A20B4C11 /* ModesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModesView.swift; sourceTree = "<group>"; };
+		14FCB6FAB11165F43D51619C /* recording_coordinator.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = recording_coordinator.cpp; sourceTree = "<group>"; };
+		16ED9525D0D817F54EEB148C /* SasayakuBridge.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SasayakuBridge.h; sourceTree = "<group>"; };
+		2182D817156A0ED69876150C /* auto_paste.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = auto_paste.hpp; sourceTree = "<group>"; };
+		25A397F891D69C5AB355D8B3 /* openai_client.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = openai_client.hpp; sourceTree = "<group>"; };
+		284157A88374D38E9BF51965 /* RecordingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordingView.swift; sourceTree = "<group>"; };
+		2B57EA54A95EAD0A073D541C /* config_manager.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = config_manager.cpp; sourceTree = "<group>"; };
+		30A569833565FE036271FC92 /* mode_manager.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = mode_manager.hpp; sourceTree = "<group>"; };
+		32E1C966109B7BEB34611BBE /* mode_manager.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = mode_manager.cpp; sourceTree = "<group>"; };
+		3F457B5A42ECB213E32A470F /* window_tracker.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = window_tracker.hpp; sourceTree = "<group>"; };
+		49F8140661A950225E579F65 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		5069C84B513AAB3AA3D06421 /* audio_processor.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = audio_processor.cpp; sourceTree = "<group>"; };
+		5A6D2719038C8F887BFB4C66 /* prompt_templates.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = prompt_templates.hpp; sourceTree = "<group>"; };
+		5C04D1E629ACEB2DC0DE4954 /* OverlayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OverlayView.swift; sourceTree = "<group>"; };
+		680EC94777A6CC243B7F0342 /* common.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = common.hpp; sourceTree = "<group>"; };
+		6B6BE05FCEA84A8A45F42C55 /* transcription.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = transcription.hpp; sourceTree = "<group>"; };
+		884589725E019C2486F3625C /* config_manager.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = config_manager.hpp; sourceTree = "<group>"; };
+		88B00E511B0D7F65059660EC /* whisper_wrapper.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = whisper_wrapper.cpp; sourceTree = "<group>"; };
+		9255A7FDAEA05BCF08A925BF /* AutoPasteMacOS.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = AutoPasteMacOS.mm; sourceTree = "<group>"; };
+		93191917FFB431E26335D094 /* OverlayPanel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OverlayPanel.swift; sourceTree = "<group>"; };
+		96BC61A503D1363EB1EFA1C3 /* transcription.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = transcription.cpp; sourceTree = "<group>"; };
+		9F55D989C7273C0C706DF92A /* audio_processor.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = audio_processor.hpp; sourceTree = "<group>"; };
+		A62BF95D3F266BF87CB24A7E /* whisper_wrapper.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = whisper_wrapper.hpp; sourceTree = "<group>"; };
+		A7547CA14831473011653558 /* audio_capture.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = audio_capture.hpp; sourceTree = "<group>"; };
+		A7D1EB75EC56F9924AA46CF2 /* ClipboardMacOS.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = ClipboardMacOS.mm; sourceTree = "<group>"; };
+		ABDF3CD498A8310B04612154 /* WindowTrackerMacOS.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = WindowTrackerMacOS.mm; sourceTree = "<group>"; };
+		C7B6ED4B614AA12586702B97 /* AudioCaptureMacOS.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = AudioCaptureMacOS.mm; sourceTree = "<group>"; };
+		CBEDCFF723B440E1A17FCC23 /* clipboard.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = clipboard.hpp; sourceTree = "<group>"; };
+		CF920F4A7A7CD52566A213D9 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		D0FC025632A99BE9D9031D24 /* recording_coordinator.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = recording_coordinator.hpp; sourceTree = "<group>"; };
+		D1D95501DB50917C70DBFEDC /* SasayakuApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SasayakuApp.swift; sourceTree = "<group>"; };
+		E2EF715E5EBBE4C460B5C7F6 /* openai_client.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = openai_client.cpp; sourceTree = "<group>"; };
+		E69827A4CDD50615B1CEAB26 /* prompt_templates.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = prompt_templates.cpp; sourceTree = "<group>"; };
+		F355981A51952369A9CCC00B /* SasayakuBridge.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = SasayakuBridge.mm; sourceTree = "<group>"; };
+		FA355D98B2B03937E3D35CD9 /* Sasayaku.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Sasayaku.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		FD94EBC4F376A90D35C3946A /* HotkeyManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HotkeyManager.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXGroup section */
+		114A553366153770A9D1E43E /* daemon */ = {
+			isa = PBXGroup;
+			children = (
+				32E1C966109B7BEB34611BBE /* mode_manager.cpp */,
+				30A569833565FE036271FC92 /* mode_manager.hpp */,
+				14FCB6FAB11165F43D51619C /* recording_coordinator.cpp */,
+				D0FC025632A99BE9D9031D24 /* recording_coordinator.hpp */,
+				3F457B5A42ECB213E32A470F /* window_tracker.hpp */,
+			);
+			path = daemon;
+			sourceTree = "<group>";
+		};
+		23A515F357CC1E72E335C376 = {
+			isa = PBXGroup;
+			children = (
+				AE51BAA429B97CC7886E651B /* Sasayaku */,
+				35EE8CCD88DDB1F8FF8FBB9D /* sasayaku */,
+				9A32307099B7B4A43280F95A /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		35EE8CCD88DDB1F8FF8FBB9D /* sasayaku */ = {
+			isa = PBXGroup;
+			children = (
+				8F9071E2DA80CACF981830CC /* src */,
+			);
+			name = sasayaku;
+			path = ..;
+			sourceTree = "<group>";
+		};
+		4798AC7F1D54422AB2760D2E /* Bridge */ = {
+			isa = PBXGroup;
+			children = (
+				16ED9525D0D817F54EEB148C /* SasayakuBridge.h */,
+				F355981A51952369A9CCC00B /* SasayakuBridge.mm */,
+			);
+			path = Bridge;
+			sourceTree = "<group>";
+		};
+		546BA512317BF74B8513581E /* utils */ = {
+			isa = PBXGroup;
+			children = (
+				2182D817156A0ED69876150C /* auto_paste.hpp */,
+				CBEDCFF723B440E1A17FCC23 /* clipboard.hpp */,
+				2B57EA54A95EAD0A073D541C /* config_manager.cpp */,
+				884589725E019C2486F3625C /* config_manager.hpp */,
+			);
+			path = utils;
+			sourceTree = "<group>";
+		};
+		8F9071E2DA80CACF981830CC /* src */ = {
+			isa = PBXGroup;
+			children = (
+				E10FAEAD2659C43AB177E36A /* ai */,
+				E618BE7B4554F29AB64A9181 /* core */,
+				114A553366153770A9D1E43E /* daemon */,
+				546BA512317BF74B8513581E /* utils */,
+			);
+			path = src;
+			sourceTree = "<group>";
+		};
+		9A32307099B7B4A43280F95A /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				FA355D98B2B03937E3D35CD9 /* Sasayaku.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		A4F61E25AC4CE71E1FA05AE2 /* Platform */ = {
+			isa = PBXGroup;
+			children = (
+				C7B6ED4B614AA12586702B97 /* AudioCaptureMacOS.mm */,
+				9255A7FDAEA05BCF08A925BF /* AutoPasteMacOS.mm */,
+				A7D1EB75EC56F9924AA46CF2 /* ClipboardMacOS.mm */,
+				ABDF3CD498A8310B04612154 /* WindowTrackerMacOS.mm */,
+			);
+			path = Platform;
+			sourceTree = "<group>";
+		};
+		A85333EAF9C38AFA4C948AFC /* ViewModels */ = {
+			isa = PBXGroup;
+			children = (
+				053821A007521857C6D6C502 /* RecordingViewModel.swift */,
+			);
+			path = ViewModels;
+			sourceTree = "<group>";
+		};
+		AE51BAA429B97CC7886E651B /* Sasayaku */ = {
+			isa = PBXGroup;
+			children = (
+				D6BA19501D5A514534CC2124 /* App */,
+				4798AC7F1D54422AB2760D2E /* Bridge */,
+				A4F61E25AC4CE71E1FA05AE2 /* Platform */,
+				A85333EAF9C38AFA4C948AFC /* ViewModels */,
+				C0EE3FE5B13170960AB55799 /* Views */,
+			);
+			path = Sasayaku;
+			sourceTree = "<group>";
+		};
+		C0EE3FE5B13170960AB55799 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				0E4DE40433AA4D81A20B4C11 /* ModesView.swift */,
+				5C04D1E629ACEB2DC0DE4954 /* OverlayView.swift */,
+				284157A88374D38E9BF51965 /* RecordingView.swift */,
+				CF920F4A7A7CD52566A213D9 /* SettingsView.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		D6BA19501D5A514534CC2124 /* App */ = {
+			isa = PBXGroup;
+			children = (
+				49F8140661A950225E579F65 /* AppDelegate.swift */,
+				FD94EBC4F376A90D35C3946A /* HotkeyManager.swift */,
+				93191917FFB431E26335D094 /* OverlayPanel.swift */,
+				D1D95501DB50917C70DBFEDC /* SasayakuApp.swift */,
+			);
+			path = App;
+			sourceTree = "<group>";
+		};
+		E10FAEAD2659C43AB177E36A /* ai */ = {
+			isa = PBXGroup;
+			children = (
+				E2EF715E5EBBE4C460B5C7F6 /* openai_client.cpp */,
+				25A397F891D69C5AB355D8B3 /* openai_client.hpp */,
+				E69827A4CDD50615B1CEAB26 /* prompt_templates.cpp */,
+				5A6D2719038C8F887BFB4C66 /* prompt_templates.hpp */,
+			);
+			path = ai;
+			sourceTree = "<group>";
+		};
+		E618BE7B4554F29AB64A9181 /* core */ = {
+			isa = PBXGroup;
+			children = (
+				A7547CA14831473011653558 /* audio_capture.hpp */,
+				5069C84B513AAB3AA3D06421 /* audio_processor.cpp */,
+				9F55D989C7273C0C706DF92A /* audio_processor.hpp */,
+				680EC94777A6CC243B7F0342 /* common.hpp */,
+				96BC61A503D1363EB1EFA1C3 /* transcription.cpp */,
+				6B6BE05FCEA84A8A45F42C55 /* transcription.hpp */,
+				88B00E511B0D7F65059660EC /* whisper_wrapper.cpp */,
+				A62BF95D3F266BF87CB24A7E /* whisper_wrapper.hpp */,
+			);
+			path = core;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		F5865729BF3627A1EA13E1D3 /* Sasayaku */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 5A229A9119AC824CBA27125B /* Build configuration list for PBXNativeTarget "Sasayaku" */;
+			buildPhases = (
+				D95883CBC1F570879E8935BE /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = Sasayaku;
+			packageProductDependencies = (
+			);
+			productName = Sasayaku;
+			productReference = FA355D98B2B03937E3D35CD9 /* Sasayaku.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		EE8C2FBD0C9346CE1C409F06 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1500;
+				TargetAttributes = {
+				};
+			};
+			buildConfigurationList = 0550B358090DA1DC2265A5EB /* Build configuration list for PBXProject "Sasayaku" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				Base,
+				en,
+			);
+			mainGroup = 23A515F357CC1E72E335C376;
+			minimizedProjectReferenceProxies = 1;
+			preferredProjectObjectVersion = 77;
+			productRefGroup = 9A32307099B7B4A43280F95A /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				F5865729BF3627A1EA13E1D3 /* Sasayaku */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		D95883CBC1F570879E8935BE /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				1738CC9AB43C88FA48FEAC41 /* AppDelegate.swift in Sources */,
+				9D839307DA04250D5D201A38 /* AudioCaptureMacOS.mm in Sources */,
+				995E54D5A8C016B18AB85764 /* AutoPasteMacOS.mm in Sources */,
+				540F2FBB66CBE30099CFB017 /* ClipboardMacOS.mm in Sources */,
+				C8D9C4710E223632B415ABC2 /* HotkeyManager.swift in Sources */,
+				AD5DC31FA233095F384CC148 /* ModesView.swift in Sources */,
+				6DF86120A59B6E86E74BF2E0 /* OverlayPanel.swift in Sources */,
+				38693706F732A9178100592D /* OverlayView.swift in Sources */,
+				D2338140FEE36409F10EDE2D /* RecordingView.swift in Sources */,
+				5F805AD0A8AE9FE1914C6135 /* RecordingViewModel.swift in Sources */,
+				C75665007C9681178C1C9FE1 /* SasayakuApp.swift in Sources */,
+				B7576EFB40AEC950118C0A97 /* SasayakuBridge.mm in Sources */,
+				542DCE469A57E9CE6781F12B /* SettingsView.swift in Sources */,
+				23E39E7C7739FA1F9872A4EF /* WindowTrackerMacOS.mm in Sources */,
+				4655A712B5168E3282C28598 /* audio_processor.cpp in Sources */,
+				D85AE0CC455302063C7A3C88 /* config_manager.cpp in Sources */,
+				64A01898AABF83B84A09588F /* mode_manager.cpp in Sources */,
+				27D4CC53939BC7D985419A94 /* openai_client.cpp in Sources */,
+				D8E74410339C8AF98308A892 /* prompt_templates.cpp in Sources */,
+				2F20806E499C4075B86D2815 /* recording_coordinator.cpp in Sources */,
+				EC94F5916E91DCDAA77FEA2C /* transcription.cpp in Sources */,
+				286CB8A7BDF68B0BE53C28EA /* whisper_wrapper.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		023BC2FE35D85E88CACF5C6A /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "c++17";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"DEBUG=1",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.9;
+			};
+			name = Debug;
+		};
+		69FF4C9506B661E7668ACEB3 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "c++17";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.9;
+			};
+			name = Release;
+		};
+		AE778C4F8F0D5B61DF56E709 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_CXX_LANGUAGE_STANDARD = "c++17";
+				CODE_SIGN_ENTITLEMENTS = Sasayaku/Resources/Sasayaku.entitlements;
+				COMBINE_HIDPI_IMAGES = YES;
+				EXCLUDED_SOURCE_FILE_NAMES = (
+					audio_capture.cpp,
+					clipboard.cpp,
+					auto_paste.cpp,
+					window_tracker.cpp,
+				);
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"__APPLE__=1",
+				);
+				HEADER_SEARCH_PATHS = (
+					"$(SRCROOT)/../third_party",
+					"$(SRCROOT)/../whisper.cpp/include",
+					"$(SRCROOT)/../whisper.cpp/ggml/include",
+				);
+				INFOPLIST_FILE = Sasayaku/Resources/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"@executable_path/../Frameworks",
+					"$(SRCROOT)/../whisper.cpp/build/src",
+					"$(SRCROOT)/../whisper.cpp/build/ggml/src",
+					"$(SRCROOT)/../whisper.cpp/build/ggml/src/ggml-metal",
+					"$(SRCROOT)/../whisper.cpp/build/ggml/src/ggml-blas",
+				);
+				LIBRARY_SEARCH_PATHS = (
+					"$(SRCROOT)/../whisper.cpp/build/src",
+					"$(SRCROOT)/../whisper.cpp/build/ggml/src",
+					"$(SRCROOT)/../whisper.cpp/build/ggml/src/ggml-metal",
+					"$(SRCROOT)/../whisper.cpp/build/ggml/src/ggml-blas",
+				);
+				OTHER_LDFLAGS = (
+					"-lwhisper",
+					"-lggml",
+					"-lggml-base",
+					"-lggml-cpu",
+					"-lggml-metal",
+					"-lggml-blas",
+					"-lcurl",
+					"-framework AVFoundation",
+					"-framework CoreGraphics",
+					"-framework Carbon",
+					"-framework AppKit",
+					"-framework Accelerate",
+					"-framework Metal",
+					"-framework MetalKit",
+					"-framework Foundation",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.sasayaku.app;
+				SDKROOT = macosx;
+				SWIFT_OBJC_BRIDGING_HEADER = "Sasayaku/Sasayaku-Bridging-Header.h";
+			};
+			name = Debug;
+		};
+		B7BE2FCE8A298E3A6D0A54AC /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_CXX_LANGUAGE_STANDARD = "c++17";
+				CODE_SIGN_ENTITLEMENTS = Sasayaku/Resources/Sasayaku.entitlements;
+				COMBINE_HIDPI_IMAGES = YES;
+				EXCLUDED_SOURCE_FILE_NAMES = (
+					audio_capture.cpp,
+					clipboard.cpp,
+					auto_paste.cpp,
+					window_tracker.cpp,
+				);
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"__APPLE__=1",
+				);
+				HEADER_SEARCH_PATHS = (
+					"$(SRCROOT)/../third_party",
+					"$(SRCROOT)/../whisper.cpp/include",
+					"$(SRCROOT)/../whisper.cpp/ggml/include",
+				);
+				INFOPLIST_FILE = Sasayaku/Resources/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"@executable_path/../Frameworks",
+					"$(SRCROOT)/../whisper.cpp/build/src",
+					"$(SRCROOT)/../whisper.cpp/build/ggml/src",
+					"$(SRCROOT)/../whisper.cpp/build/ggml/src/ggml-metal",
+					"$(SRCROOT)/../whisper.cpp/build/ggml/src/ggml-blas",
+				);
+				LIBRARY_SEARCH_PATHS = (
+					"$(SRCROOT)/../whisper.cpp/build/src",
+					"$(SRCROOT)/../whisper.cpp/build/ggml/src",
+					"$(SRCROOT)/../whisper.cpp/build/ggml/src/ggml-metal",
+					"$(SRCROOT)/../whisper.cpp/build/ggml/src/ggml-blas",
+				);
+				OTHER_LDFLAGS = (
+					"-lwhisper",
+					"-lggml",
+					"-lggml-base",
+					"-lggml-cpu",
+					"-lggml-metal",
+					"-lggml-blas",
+					"-lcurl",
+					"-framework AVFoundation",
+					"-framework CoreGraphics",
+					"-framework Carbon",
+					"-framework AppKit",
+					"-framework Accelerate",
+					"-framework Metal",
+					"-framework MetalKit",
+					"-framework Foundation",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.sasayaku.app;
+				SDKROOT = macosx;
+				SWIFT_OBJC_BRIDGING_HEADER = "Sasayaku/Sasayaku-Bridging-Header.h";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		0550B358090DA1DC2265A5EB /* Build configuration list for PBXProject "Sasayaku" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				023BC2FE35D85E88CACF5C6A /* Debug */,
+				69FF4C9506B661E7668ACEB3 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		5A229A9119AC824CBA27125B /* Build configuration list for PBXNativeTarget "Sasayaku" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				AE778C4F8F0D5B61DF56E709 /* Debug */,
+				B7BE2FCE8A298E3A6D0A54AC /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = EE8C2FBD0C9346CE1C409F06 /* Project object */;
+}
