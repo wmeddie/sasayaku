@@ -2,13 +2,9 @@
 
 #include "common.hpp"
 #include <atomic>
-#include <thread>
 #include <mutex>
-
-// Forward declare PipeWire types
-struct pw_thread_loop;
-struct pw_stream;
-struct pw_context;
+#include <memory>
+#include <string>
 
 namespace sasayaku {
 
@@ -30,11 +26,8 @@ public:
     AudioCapture();
     ~AudioCapture();
 
-    // Initialize (just stores config)
+    // Initialize (stores config, lazy platform init on first recording)
     bool initialize(const AudioCaptureConfig& config);
-
-    // Initialize PipeWire (called lazily on first recording)
-    bool initialize_pipewire();
 
     // Start/stop recording
     bool start_recording(AudioDataCallback callback);
@@ -50,10 +43,13 @@ public:
     // Get last error
     std::string get_last_error() const { return last_error_; }
 
+    // Called by platform implementation to deliver audio data
+    void on_process(const float* samples, size_t count);
+
 private:
-    pw_thread_loop* loop_ = nullptr;
-    pw_context* context_ = nullptr;
-    pw_stream* stream_ = nullptr;
+    // Platform-specific implementation (defined in audio_capture_pipewire.cpp or audio_capture_macos.mm)
+    struct PlatformImpl;
+    std::unique_ptr<PlatformImpl> platform_;
 
     AudioCaptureConfig config_;
     std::atomic<bool> is_recording_{false};
@@ -65,11 +61,8 @@ private:
     AudioDataCallback data_callback_;
     std::string last_error_;
 
-    void cleanup();
-
-public:
-    void on_process(const float* samples, size_t count);
-    pw_stream* get_stream() { return stream_; }
+    bool initialize_platform();
+    void cleanup_platform();
 };
 
 } // namespace sasayaku

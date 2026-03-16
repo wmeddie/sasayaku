@@ -1,0 +1,131 @@
+name: Sasayaku
+options:
+  bundleIdPrefix: com.sasayaku
+  deploymentTarget:
+    macOS: "14.0"
+  xcodeVersion: "15.0"
+  createIntermediateGroups: true
+
+settings:
+  base:
+    SWIFT_VERSION: "5.9"
+    CLANG_CXX_LANGUAGE_STANDARD: c++17
+    MACOSX_DEPLOYMENT_TARGET: "14.0"
+
+targets:
+  Sasayaku:
+    type: application
+    platform: macOS
+    sources:
+      # SwiftUI app
+      - path: Sasayaku/App
+        type: group
+      - path: Sasayaku/Views
+        type: group
+      - path: Sasayaku/ViewModels
+        type: group
+
+      # ObjC++ bridge
+      - path: Sasayaku/Bridge
+        type: group
+
+      # macOS platform implementations
+      - path: Sasayaku/Platform
+        type: group
+
+      # Shared C++ core (portable)
+      - path: ../src/core/common.hpp
+        type: file
+      - path: ../src/core/audio_processor.cpp
+        type: file
+      - path: ../src/core/audio_processor.hpp
+        type: file
+      - path: ../src/core/whisper_wrapper.cpp
+        type: file
+      - path: ../src/core/whisper_wrapper.hpp
+        type: file
+      - path: ../src/core/transcription.cpp
+        type: file
+      - path: ../src/core/transcription.hpp
+        type: file
+      - path: ../src/core/audio_capture.hpp
+        type: file
+
+      # Shared AI
+      - path: ../src/ai/openai_client.cpp
+        type: file
+      - path: ../src/ai/openai_client.hpp
+        type: file
+      - path: ../src/ai/prompt_templates.cpp
+        type: file
+      - path: ../src/ai/prompt_templates.hpp
+        type: file
+
+      # Shared daemon logic
+      - path: ../src/daemon/mode_manager.cpp
+        type: file
+      - path: ../src/daemon/mode_manager.hpp
+        type: file
+      - path: ../src/daemon/recording_coordinator.cpp
+        type: file
+      - path: ../src/daemon/recording_coordinator.hpp
+        type: file
+      - path: ../src/daemon/window_tracker.hpp
+        type: file
+
+      # Shared utils
+      - path: ../src/utils/config_manager.cpp
+        type: file
+      - path: ../src/utils/config_manager.hpp
+        type: file
+      - path: ../src/utils/clipboard.hpp
+        type: file
+      - path: ../src/utils/auto_paste.hpp
+        type: file
+
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.sasayaku.app
+        INFOPLIST_FILE: Sasayaku/Resources/Info.plist
+        CODE_SIGN_ENTITLEMENTS: Sasayaku/Resources/Sasayaku.entitlements
+        SWIFT_OBJC_BRIDGING_HEADER: Sasayaku/Sasayaku-Bridging-Header.h
+        LD_RUNPATH_SEARCH_PATHS:
+          - "@executable_path/../Frameworks"
+          - "$(SRCROOT)/../whisper.cpp/build/src"
+          - "$(SRCROOT)/../whisper.cpp/build/ggml/src"
+          - "$(SRCROOT)/../whisper.cpp/build/ggml/src/ggml-metal"
+          - "$(SRCROOT)/../whisper.cpp/build/ggml/src/ggml-blas"
+        HEADER_SEARCH_PATHS:
+          - "$(SRCROOT)/../third_party"
+          - "$(SRCROOT)/../whisper.cpp/include"
+          - "$(SRCROOT)/../whisper.cpp/ggml/include"
+        LIBRARY_SEARCH_PATHS:
+          - "$(SRCROOT)/../whisper.cpp/build/src"
+          - "$(SRCROOT)/../whisper.cpp/build/ggml/src"
+          - "$(SRCROOT)/../whisper.cpp/build/ggml/src/ggml-metal"
+          - "$(SRCROOT)/../whisper.cpp/build/ggml/src/ggml-blas"
+        OTHER_LDFLAGS:
+          - "-lwhisper"
+          - "-lggml"
+          - "-lggml-base"
+          - "-lggml-cpu"
+          - "-lggml-metal"
+          - "-lggml-blas"
+          - "-lcurl"
+          - "-framework AVFoundation"
+          - "-framework CoreGraphics"
+          - "-framework Carbon"
+          - "-framework AppKit"
+          - "-framework Accelerate"
+          - "-framework Metal"
+          - "-framework MetalKit"
+          - "-framework Foundation"
+        GCC_PREPROCESSOR_DEFINITIONS:
+          - "__APPLE__=1"
+        CLANG_CXX_LANGUAGE_STANDARD: c++17
+        # Don't compile the Linux-only .cpp files
+        EXCLUDED_SOURCE_FILE_NAMES:
+          - "audio_capture.cpp"
+          - "clipboard.cpp"
+          - "auto_paste.cpp"
+          - "window_tracker.cpp"

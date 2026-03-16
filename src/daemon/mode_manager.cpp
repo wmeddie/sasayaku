@@ -1,5 +1,4 @@
 #include "mode_manager.hpp"
-#include "../utils/clipboard.hpp"
 #include <iostream>
 
 namespace sasayaku {
@@ -81,7 +80,7 @@ std::string ModeManager::process_transcript(
         return processed_transcript;
     }
 
-    // Build prompt from template
+    // Build template variables
     std::map<std::string, std::string> template_vars;
     template_vars["transcript"] = processed_transcript;
 
@@ -90,11 +89,21 @@ std::string ModeManager::process_transcript(
         template_vars["clipboard"] = clipboard_content;
     }
 
-    std::string prompt = PromptTemplates::render(mode.prompt, template_vars);
+    // Build system message from prompt template
+    std::string system_msg = PromptTemplates::render(mode.prompt, template_vars);
 
-    // Call AI client
+    // Build user message from user_template (defaults to {transcript})
+    std::string user_msg = PromptTemplates::render(mode.user_template, template_vars);
+
+    // Call AI client with system + user messages
+    std::vector<ChatMessage> messages;
+    if (!system_msg.empty()) {
+        messages.push_back({"system", system_msg});
+    }
+    messages.push_back({"user", user_msg});
+
     std::string error;
-    std::string result = ai_client_->complete(prompt, &error);
+    std::string result = ai_client_->chat_complete(messages, &error);
 
     if (!error.empty()) {
         std::cerr << "AI processing error: " << error << std::endl;

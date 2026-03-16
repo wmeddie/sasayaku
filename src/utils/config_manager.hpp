@@ -14,7 +14,8 @@ struct ModeConfig {
     std::string name;
     std::string description;
     bool use_ai;
-    std::string prompt;
+    std::string prompt;              // System message
+    std::string user_template = "{transcript}";  // User message template
     std::vector<std::string> auto_apps;  // App IDs/class names
     bool requires_clipboard = false;
 };

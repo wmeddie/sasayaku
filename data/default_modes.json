@@ -12,34 +12,39 @@
       "description": "Simple transcription without formatting",
       "use_ai": false,
       "prompt": "",
+      "user_template": "{transcript}",
       "auto_apps": []
     },
     "email": {
       "name": "Email Mode",
       "description": "Format speech as a professional email",
       "use_ai": true,
-      "prompt": "You are a professional email writing assistant. Take the following speech transcript and convert it into a well-formatted, professional email. Fix any grammar issues, add appropriate greeting and closing, use proper paragraphs, and maintain a professional tone. Only output the formatted email text, nothing else.\n\nTranscript:\n{transcript}",
+      "prompt": "You are a professional email writing assistant. Take the user's spoken words and convert them into a well-formatted, professional email. Fix grammar, add appropriate greeting and closing, use proper paragraphs, and maintain a professional tone. Output only the formatted email.",
+      "user_template": "{transcript}",
       "auto_apps": ["thunderbird", "evolution", "geary", "gmail", "outlook"]
     },
     "note": {
       "name": "Note Mode",
       "description": "Format speech as organized bullet-point notes",
       "use_ai": true,
-      "prompt": "You are a note-taking assistant. Take the following speech transcript and convert it into well-organized, clear bullet-point notes. Group related ideas together, fix grammar, and make it easy to read. Use markdown formatting with bullet points and subpoints where appropriate. Only output the formatted notes, nothing else.\n\nTranscript:\n{transcript}",
+      "prompt": "You are a note-taking assistant. Convert the user's spoken words into well-organized, clear bullet-point notes. Group related ideas, fix grammar, and use markdown formatting with bullet points and subpoints. Output only the formatted notes.",
+      "user_template": "{transcript}",
       "auto_apps": ["org.gnome.Notes", "gnote", "tomboy", "joplin", "obsidian", "notion"]
     },
     "prompt": {
       "name": "Prompt Mode",
       "description": "Create a detailed AI prompt from your speech",
       "use_ai": true,
-      "prompt": "You are an AI prompt engineering expert. Take the following speech transcript and convert it into a clear, detailed, well-structured prompt for an AI assistant. Organize the requirements, add context where needed, and make it actionable. Output only the refined prompt, nothing else.\n\nTranscript:\n{transcript}",
+      "prompt": "You are an AI prompt engineering expert. Convert the user's spoken description into a clear, detailed, well-structured prompt for an AI assistant. Organize requirements, add context where needed, and make it actionable. Output only the refined prompt.",
+      "user_template": "{transcript}",
       "auto_apps": ["chatgpt", "claude", "openai", "anthropic"]
     },
     "super": {
       "name": "Super Mode",
       "description": "Process speech using clipboard content as context",
       "use_ai": true,
-      "prompt": "You are a versatile AI assistant. The user has clipboard content and has given you a voice command. Use the clipboard content as context to fulfill their request. Be concise and output only what was requested.\n\nClipboard content:\n{clipboard}\n\nVoice command:\n{transcript}",
+      "prompt": "You are a versatile AI assistant. The user will provide clipboard content and a voice command. Use the clipboard content as context to fulfill their request. Be concise and output only what was requested.",
+      "user_template": "Clipboard content:\n{clipboard}\n\nRequest:\n{transcript}",
       "auto_apps": [],
       "requires_clipboard": true
     },
@@ -47,13 +52,12 @@
       "name": "Code Mode",
       "description": "Generate or explain code from speech",
       "use_ai": true,
-      "prompt": "You are a coding assistant. Take the following speech transcript describing code requirements and convert it into clean, well-commented code or a clear technical explanation. Include proper formatting and best practices. Only output the code or explanation, nothing else.\n\nTranscript:\n{transcript}",
+      "prompt": "You are a coding assistant. Convert the user's spoken description into clean, well-commented code or a clear technical explanation. Use proper formatting and best practices. Output only the code or explanation.",
+      "user_template": "{transcript}",
       "auto_apps": ["code", "cursor", "vscode", "codium", "vim", "neovim", "emacs"]
     }
   },
   "vocabulary": {
-    "optimize": "optimise",
-    "color": "colour",
     "GPT": "GPT",
     "API": "API",
     "Linux": "Linux",

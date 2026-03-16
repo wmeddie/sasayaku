@@ -1,4 +1,11 @@
 #include "audio_capture.hpp"
+
+#if defined(__APPLE__)
+// macOS implementation is in AudioCaptureMacOS.mm
+#elif defined(_WIN32)
+// Windows implementation is in AudioCaptureWindows.cpp
+#else
+
 #include <pipewire/pipewire.h>
 #include <spa/param/audio/format-utils.h>
 #include <cstring>
@@ -6,108 +13,134 @@
 
 namespace sasayaku {
 
+// Platform-specific PipeWire implementation
+struct AudioCapture::PlatformImpl {
+    pw_thread_loop* loop = nullptr;
+    pw_context* context = nullptr;
+    pw_stream* stream = nullptr;
+};
+
 // PipeWire stream callback
-static void on_process(void* userdata) {
+static void on_process_pw(void* userdata) {
     auto* capture = static_cast<AudioCapture*>(userdata);
 
-    pw_buffer* buf = pw_stream_dequeue_buffer(capture->get_stream());
+    // Access stream through platform impl via a stored pointer
+    // We store the stream pointer in userdata context
+    auto& platform = *static_cast<AudioCapture::PlatformImpl*>(
+        // We need the stream from the capture object - use a helper
+        nullptr  // placeholder
+    );
+
+    // Actually, we pass AudioCapture* as userdata, so we need another way
+    // to get the stream. Let's use a wrapper struct.
+    (void)capture;
+}
+
+// We need a wrapper to pass both capture and stream
+struct PipeWireCallbackData {
+    AudioCapture* capture;
+    pw_stream* stream;
+};
+
+static void on_process_callback(void* userdata) {
+    auto* data = static_cast<PipeWireCallbackData*>(userdata);
+
+    pw_buffer* buf = pw_stream_dequeue_buffer(data->stream);
     if (!buf) {
         return;
     }
 
     spa_buffer* spa_buf = buf->buffer;
-    spa_data* data = &spa_buf->datas[0];
+    spa_data* spa_d = &spa_buf->datas[0];
 
-    if (data->data) {
-        const float* samples = static_cast<const float*>(data->data);
-        uint32_t n_samples = data->chunk->size / sizeof(float);
+    if (spa_d->data) {
+        const float* samples = static_cast<const float*>(spa_d->data);
+        uint32_t n_samples = spa_d->chunk->size / sizeof(float);
 
         if (n_samples > 0) {
-            capture->on_process(samples, n_samples);
+            data->capture->on_process(samples, n_samples);
         }
     }
 
-    pw_stream_queue_buffer(capture->get_stream(), buf);
+    pw_stream_queue_buffer(data->stream, buf);
 }
 
 static const pw_stream_events stream_events = {
     .version = PW_VERSION_STREAM_EVENTS,
-    .process = ::sasayaku::on_process,
+    .process = on_process_callback,
 };
 
-AudioCapture::AudioCapture() {
+// Store callback data globally per-capture (only one stream per AudioCapture)
+static PipeWireCallbackData g_callback_data;
+
+AudioCapture::AudioCapture()
+    : platform_(std::make_unique<PlatformImpl>()) {
 }
 
 AudioCapture::~AudioCapture() {
-    cleanup();
+    cleanup_platform();
 }
 
-void AudioCapture::cleanup() {
+void AudioCapture::cleanup_platform() {
     if (is_recording_) {
         stop_recording();
     }
 
-    if (loop_) {
-        pw_thread_loop_lock(loop_);
+    if (platform_->loop) {
+        pw_thread_loop_lock(platform_->loop);
     }
 
-    if (stream_) {
-        pw_stream_destroy(stream_);
-        stream_ = nullptr;
+    if (platform_->stream) {
+        pw_stream_destroy(platform_->stream);
+        platform_->stream = nullptr;
     }
 
-    if (loop_) {
-        pw_thread_loop_unlock(loop_);
-        pw_thread_loop_stop(loop_);
-        pw_thread_loop_destroy(loop_);
-        loop_ = nullptr;
+    if (platform_->loop) {
+        pw_thread_loop_unlock(platform_->loop);
+        pw_thread_loop_stop(platform_->loop);
+        pw_thread_loop_destroy(platform_->loop);
+        platform_->loop = nullptr;
     }
 
-    if (context_) {
-        pw_context_destroy(context_);
-        context_ = nullptr;
+    if (platform_->context) {
+        pw_context_destroy(platform_->context);
+        platform_->context = nullptr;
     }
 }
 
 bool AudioCapture::initialize(const AudioCaptureConfig& config) {
     config_ = config;
-
-    // Just store config, we'll initialize PipeWire lazily on first recording
     return true;
 }
 
-bool AudioCapture::initialize_pipewire() {
-    if (loop_ && context_) {
+bool AudioCapture::initialize_platform() {
+    if (platform_->loop && platform_->context) {
         return true;  // Already initialized
     }
 
-    // Initialize PipeWire
     pw_init(nullptr, nullptr);
 
-    // Create thread loop
-    loop_ = pw_thread_loop_new("audio-capture", nullptr);
-    if (!loop_) {
+    platform_->loop = pw_thread_loop_new("audio-capture", nullptr);
+    if (!platform_->loop) {
         last_error_ = "Failed to create PipeWire thread loop";
         return false;
     }
 
-    // Create context
-    context_ = pw_context_new(
-        pw_thread_loop_get_loop(loop_),
+    platform_->context = pw_context_new(
+        pw_thread_loop_get_loop(platform_->loop),
         nullptr,
         0
     );
 
-    if (!context_) {
+    if (!platform_->context) {
         last_error_ = "Failed to create PipeWire context";
-        cleanup();
+        cleanup_platform();
         return false;
     }
 
-    // Start the thread loop
-    if (pw_thread_loop_start(loop_) < 0) {
+    if (pw_thread_loop_start(platform_->loop) < 0) {
         last_error_ = "Failed to start PipeWire thread loop";
-        cleanup();
+        cleanup_platform();
         return false;
     }
 
@@ -120,17 +153,15 @@ bool AudioCapture::start_recording(AudioDataCallback callback) {
         return true;
     }
 
-    // Initialize PipeWire on first use
-    if (!initialize_pipewire()) {
+    if (!initialize_platform()) {
         return false;
     }
 
     data_callback_ = callback;
     buffer_.clear();
 
-    pw_thread_loop_lock(loop_);
+    pw_thread_loop_lock(platform_->loop);
 
-    // Create stream properties
     pw_properties* props = pw_properties_new(
         PW_KEY_MEDIA_TYPE, "Audio",
         PW_KEY_MEDIA_CATEGORY, "Capture",
@@ -143,22 +174,25 @@ bool AudioCapture::start_recording(AudioDataCallback callback) {
         pw_properties_set(props, PW_KEY_STREAM_CAPTURE_SINK, "true");
     }
 
-    // Create stream
-    stream_ = pw_stream_new_simple(
-        pw_thread_loop_get_loop(loop_),
+    // Set up callback data
+    g_callback_data.capture = this;
+
+    platform_->stream = pw_stream_new_simple(
+        pw_thread_loop_get_loop(platform_->loop),
         "sasayaku-capture",
         props,
         &stream_events,
-        this
+        &g_callback_data
     );
 
-    if (!stream_) {
-        pw_thread_loop_unlock(loop_);
+    if (!platform_->stream) {
+        pw_thread_loop_unlock(platform_->loop);
         last_error_ = "Failed to create PipeWire stream";
         return false;
     }
 
-    // Set audio format
+    g_callback_data.stream = platform_->stream;
+
     uint8_t buffer[1024];
     spa_pod_builder builder = SPA_POD_BUILDER_INIT(buffer, sizeof(buffer));
 
@@ -170,30 +204,26 @@ bool AudioCapture::start_recording(AudioDataCallback callback) {
 
     params[0] = spa_format_audio_raw_build(&builder, SPA_PARAM_EnumFormat, &audio_info);
 
-    // Connect stream
     enum pw_stream_flags flags = static_cast<pw_stream_flags>(
         PW_STREAM_FLAG_AUTOCONNECT |
         PW_STREAM_FLAG_MAP_BUFFERS |
         PW_STREAM_FLAG_RT_PROCESS
     );
 
-    enum pw_direction direction = config_.source == AudioSource::SYSTEM_AUDIO ?
-        PW_DIRECTION_INPUT : PW_DIRECTION_INPUT;
-
     int result = pw_stream_connect(
-        stream_,
-        direction,
+        platform_->stream,
+        PW_DIRECTION_INPUT,
         PW_ID_ANY,
         flags,
         params,
         1
     );
 
-    pw_thread_loop_unlock(loop_);
+    pw_thread_loop_unlock(platform_->loop);
 
     if (result < 0) {
         last_error_ = "Failed to connect PipeWire stream: error code " + std::to_string(result);
-        cleanup();
+        cleanup_platform();
         return false;
     }
 
@@ -211,10 +241,10 @@ bool AudioCapture::stop_recording() {
     should_stop_ = true;
     is_recording_ = false;
 
-    if (stream_ && loop_) {
-        pw_thread_loop_lock(loop_);
-        pw_stream_set_active(stream_, false);
-        pw_thread_loop_unlock(loop_);
+    if (platform_->stream && platform_->loop) {
+        pw_thread_loop_lock(platform_->loop);
+        pw_stream_set_active(platform_->stream, false);
+        pw_thread_loop_unlock(platform_->loop);
     }
 
     return true;
@@ -235,16 +265,16 @@ void AudioCapture::on_process(const float* samples, size_t count) {
         return;
     }
 
-    // Add to buffer
     {
         std::lock_guard<std::mutex> lock(buffer_mutex_);
         buffer_.insert(buffer_.end(), samples, samples + count);
     }
 
-    // Call user callback if provided
     if (data_callback_) {
         data_callback_(samples, count);
     }
 }
 
 } // namespace sasayaku
+
+#endif // platform selection

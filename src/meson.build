@@ -45,7 +45,6 @@ libsasayaku_utils = static_library('sasayaku_utils',
 daemon_sources = files(
   'daemon/main.cpp',
   'daemon/dbus_service.cpp',
-  'daemon/tray_icon.cpp',
   'daemon/mode_manager.cpp',
   'daemon/window_tracker.cpp',
   'daemon/recording_coordinator.cpp',
@@ -75,7 +74,6 @@ sasayaku_cli = executable('sasayaku-cli',
 ui_sources = files(
   'ui/recording_window.cpp',
   'ui/settings_window.cpp',
-  'ui/mode_editor.cpp',
 )
 
 # UI library (used by daemon)

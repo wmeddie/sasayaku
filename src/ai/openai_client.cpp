@@ -128,6 +128,7 @@ std::string OpenAIClient::make_request(
     curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_callback);
     curl_easy_setopt(curl, CURLOPT_WRITEDATA, &response);
     curl_easy_setopt(curl, CURLOPT_TIMEOUT, config_.timeout_seconds);
+    curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L);
 
     // Perform request
     CURLcode res = curl_easy_perform(curl);
