@@ -27,23 +27,24 @@ Download from [ollama.com](https://ollama.com) and pull a small, fast model:
 ollama pull qwen3:0.6b
 ```
 
-### 2. Download a Whisper Model
+### 2. Build & Run
 
-Pick a model based on your hardware. Smaller = faster, larger = more accurate:
+See platform-specific instructions below.
+
+### 3. Download a Whisper Model
+
+On all platforms, you can download whisper models directly from the **Settings UI** — just pick a model from the dropdown and click Download.
+
+Available models (smaller = faster, larger = more accurate):
 
 | Model | Size | Speed | Quality |
 |-------|------|-------|---------|
-| `ggml-tiny.bin` | 75 MB | Fastest | Basic |
-| `ggml-base.bin` | 142 MB | Fast | Good |
-| `ggml-small.bin` | 466 MB | Moderate | Better |
-| `ggml-medium.bin` | 1.5 GB | Slow | Great |
-| `ggml-large-v3-turbo.bin` | 1.6 GB | Moderate | Excellent |
-
-On macOS and Windows, you can download models directly from the Settings UI.
-
-### 3. Build & Run
-
-See platform-specific instructions below.
+| Tiny | 75 MB | Fastest | Basic |
+| Base | 142 MB | Fast | Good |
+| Small | 466 MB | Moderate | Better |
+| Medium | 1.5 GB | Slow | Great |
+| Large v3 Turbo | 1.6 GB | Moderate | Excellent |
+| Large v3 | 3.1 GB | Slowest | Best |
 
 ### 4. Configure
 
