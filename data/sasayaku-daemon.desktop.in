@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Name=Sasayaku Daemon
+Comment=Voice dictation background service
+Exec=@bindir@/sasayaku-daemon
+Icon=sasayaku
+Terminal=false
+Categories=Utility;
+NoDisplay=true
+X-GNOME-Autostart-enabled=true

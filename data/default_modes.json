@@ -1,0 +1,62 @@
+{
+  "whisper": {
+    "model_path": "~/.local/share/sasayaku/models/ggml-large-v3-turbo.bin",
+    "use_gpu": true,
+    "gpu_device": 0,
+    "n_threads": 4,
+    "language": "en"
+  },
+  "modes": {
+    "voice_to_text": {
+      "name": "Voice to Text",
+      "description": "Simple transcription without formatting",
+      "use_ai": false,
+      "prompt": "",
+      "auto_apps": []
+    },
+    "email": {
+      "name": "Email Mode",
+      "description": "Format speech as a professional email",
+      "use_ai": true,
+      "prompt": "You are a professional email writing assistant. Take the following speech transcript and convert it into a well-formatted, professional email. Fix any grammar issues, add appropriate greeting and closing, use proper paragraphs, and maintain a professional tone. Only output the formatted email text, nothing else.\n\nTranscript:\n{transcript}",
+      "auto_apps": ["thunderbird", "evolution", "geary", "gmail", "outlook"]
+    },
+    "note": {
+      "name": "Note Mode",
+      "description": "Format speech as organized bullet-point notes",
+      "use_ai": true,
+      "prompt": "You are a note-taking assistant. Take the following speech transcript and convert it into well-organized, clear bullet-point notes. Group related ideas together, fix grammar, and make it easy to read. Use markdown formatting with bullet points and subpoints where appropriate. Only output the formatted notes, nothing else.\n\nTranscript:\n{transcript}",
+      "auto_apps": ["org.gnome.Notes", "gnote", "tomboy", "joplin", "obsidian", "notion"]
+    },
+    "prompt": {
+      "name": "Prompt Mode",
+      "description": "Create a detailed AI prompt from your speech",
+      "use_ai": true,
+      "prompt": "You are an AI prompt engineering expert. Take the following speech transcript and convert it into a clear, detailed, well-structured prompt for an AI assistant. Organize the requirements, add context where needed, and make it actionable. Output only the refined prompt, nothing else.\n\nTranscript:\n{transcript}",
+      "auto_apps": ["chatgpt", "claude", "openai", "anthropic"]
+    },
+    "super": {
+      "name": "Super Mode",
+      "description": "Process speech using clipboard content as context",
+      "use_ai": true,
+      "prompt": "You are a versatile AI assistant. The user has clipboard content and has given you a voice command. Use the clipboard content as context to fulfill their request. Be concise and output only what was requested.\n\nClipboard content:\n{clipboard}\n\nVoice command:\n{transcript}",
+      "auto_apps": [],
+      "requires_clipboard": true
+    },
+    "code": {
+      "name": "Code Mode",
+      "description": "Generate or explain code from speech",
+      "use_ai": true,
+      "prompt": "You are a coding assistant. Take the following speech transcript describing code requirements and convert it into clean, well-commented code or a clear technical explanation. Include proper formatting and best practices. Only output the code or explanation, nothing else.\n\nTranscript:\n{transcript}",
+      "auto_apps": ["code", "cursor", "vscode", "codium", "vim", "neovim", "emacs"]
+    }
+  },
+  "vocabulary": {
+    "optimize": "optimise",
+    "color": "colour",
+    "GPT": "GPT",
+    "API": "API",
+    "Linux": "Linux",
+    "Ubuntu": "Ubuntu"
+  }
+}
