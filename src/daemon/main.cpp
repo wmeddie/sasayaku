@@ -123,6 +123,7 @@ public:
 
         // Initialize settings window
         settings_window_ = std::make_unique<SettingsWindow>();
+        settings_window_->set_models_dir(config_manager_->get_data_dir() + "/models");
         if (!settings_window_->initialize()) {
             std::cerr << "Failed to initialize settings window" << std::endl;
             return false;
