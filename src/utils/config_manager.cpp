@@ -75,8 +75,9 @@ std::string ConfigManager::get_data_dir() const {
 
 void ConfigManager::initialize_defaults() {
     // Set default API config
-    config_.api.base_url = "https://api.openai.com/v1";
-    config_.api.model = "gpt-4o-mini";
+    config_.api.base_url = "http://localhost:11434/v1/";
+    config_.api.api_key = "ollama";
+    config_.api.model = "qwen3:0.6b";
     config_.api.temperature = 0.7f;
     config_.api.max_tokens = 2048;
     config_.api.timeout_seconds = 30;

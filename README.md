@@ -1,328 +1,244 @@
 # Sasayaku (囁く)
 
-A GNOME voice dictation application for Linux/Wayland inspired by SuperWhisper for macOS. "Sasayaku" means "to whisper" in Japanese.
+A cross-platform voice dictation app with AI-enhanced modes. Runs entirely on your machine — speech recognition via whisper.cpp and text processing via Ollama. No cloud services required. "Sasayaku" means "to whisper" in Japanese.
 
 ## Features
 
-- **Voice-to-text transcription** using whisper.cpp with CUDA acceleration
-- **Multiple AI-enhanced modes**: Email, Note, Prompt, Super mode, and more
-- **Intelligent text formatting** using OpenAI-compatible APIs (OpenAI, local llama.cpp, etc.)
-- **App-aware mode switching**: Automatically switch modes based on the active application
-- **Clipboard integration**: Super mode uses clipboard content as context
-- **Recording UI**: Window with mode dropdown, audio level visualization, and transcription display
-- **Settings UI**: Configure API keys, models, and Whisper settings through a GUI
-- **Custom vocabulary**: Map words and phrases for consistent spelling
-- **Keyboard shortcut support**: Toggle recording with custom GNOME shortcuts
-- **Wayland native**: Built for modern Linux desktop environments
+- **Fully local** — speech-to-text and AI processing run on your hardware, nothing leaves your machine
+- **Cross-platform** — Linux (GNOME/Wayland), macOS, and Windows
+- **Voice-to-text transcription** using whisper.cpp with GPU acceleration (CUDA, Metal)
+- **AI-enhanced modes** — Email, Note, Prompt, Code, and custom modes with configurable system/user prompts
+- **Works with Ollama** — use any local model (default: `qwen3:0.6b` for speed) or any OpenAI-compatible API
+- **Floating overlay** — unobtrusive recording/processing/result panel with waveform visualization
+- **Editable results** — review and fix transcription before accepting
+- **App-aware mode switching** — automatically picks the right mode based on the active window
+- **Clipboard integration** — Super mode uses clipboard content as context
+- **Custom vocabulary** — map words and phrases for consistent spelling
+- **Global hotkey** — toggle recording from anywhere (Option+Space on macOS, Alt+Space on Windows/Linux)
+- **Input device selection** — choose which microphone to use
 
-## Prerequisites
+## Quick Start
 
-- Ubuntu 25.10 or similar (Wayland)
-- NVIDIA GPU with CUDA support
-- GTK4 and libadwaita
-- PipeWire for audio capture
-- Meson build system
+### 1. Install Ollama
 
-### Install Dependencies
+Download from [ollama.com](https://ollama.com) and pull a small, fast model:
 
 ```bash
-sudo apt install build-essential meson pkg-config cmake cuda-toolkit
+ollama pull qwen3:0.6b
+```
+
+### 2. Download a Whisper Model
+
+Pick a model based on your hardware. Smaller = faster, larger = more accurate:
+
+| Model | Size | Speed | Quality |
+|-------|------|-------|---------|
+| `ggml-tiny.bin` | 75 MB | Fastest | Basic |
+| `ggml-base.bin` | 142 MB | Fast | Good |
+| `ggml-small.bin` | 466 MB | Moderate | Better |
+| `ggml-medium.bin` | 1.5 GB | Slow | Great |
+| `ggml-large-v3-turbo.bin` | 1.6 GB | Moderate | Excellent |
+
+On macOS and Windows, you can download models directly from the Settings UI.
+
+### 3. Build & Run
+
+See platform-specific instructions below.
+
+### 4. Configure
+
+On first run, open Settings and configure:
+
+- **API Base URL**: `http://localhost:11434/v1/` (Ollama default)
+- **API Key**: `ollama`
+- **Model**: `qwen3:0.6b`
+- **Whisper Model**: select and download from the model picker
+- **Input Device**: choose your microphone
+
+## Platform Setup
+
+### macOS
+
+**Prerequisites**: Xcode, Homebrew
+
+```bash
+# Install xcodegen
+brew install xcodegen
+
+# Clone and build
+git submodule update --init --recursive
+cd macos
+./build.sh
+```
+
+Or manually:
+```bash
+# Build whisper.cpp with Metal
+cd whisper.cpp && mkdir build && cd build
+cmake .. -DGGML_METAL=ON -DCMAKE_BUILD_TYPE=Release
+cmake --build . -j$(sysctl -n hw.ncpu)
+cd ../../macos
+
+# Generate Xcode project and build
+xcodegen generate
+xcodebuild -project Sasayaku.xcodeproj -scheme Sasayaku -configuration Release build
+```
+
+The app runs as a menu bar icon. Press **Option+Space** to toggle recording.
+
+Config location: `~/Library/Application Support/Sasayaku/config.json`
+
+### Linux (GNOME/Wayland)
+
+**Prerequisites**: GTK4, libadwaita, PipeWire, Meson, CUDA toolkit (optional)
+
+```bash
+# Install dependencies (Ubuntu/Fedora)
+sudo apt install build-essential meson pkg-config cmake
 sudo apt install libgtk-4-dev libadwaita-1-dev libgio-2.0-dev
 sudo apt install libpipewire-0.3-dev libspa-0.2-dev
 sudo apt install libcurl4-openssl-dev nlohmann-json3-dev
-sudo apt install ydotool  # For auto-pasting
-```
+sudo apt install ydotool  # Optional: for auto-pasting
 
-## Building
-
-1. **Build whisper.cpp with CUDA** (already done in this repo):
-```bash
-cd whisper.cpp
-mkdir -p build && cd build
+# Build whisper.cpp
+git submodule update --init --recursive
+cd whisper.cpp && mkdir build && cd build
 cmake .. -DGGML_CUDA=ON -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=ON
 cmake --build . -j$(nproc)
 cd ../..
-```
 
-2. **Build Sasayaku**:
-```bash
+# Build Sasayaku
 meson setup build
 meson compile -C build
-```
-
-3. **Install** (optional):
-```bash
-sudo meson install -C build
-```
-
-## Setup
-
-### 1. Download a Whisper Model
-
-Download a whisper model from the whisper.cpp repository:
-
-```bash
-# Create models directory
-mkdir -p ~/.local/share/sasayaku/models
-
-# Download large-v3-turbo model (recommended - best quality/speed tradeoff)
-cd ~/.local/share/sasayaku/models
-wget https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-large-v3-turbo.bin
-
-# Or download other models:
-# ggml-tiny.en.bin    - Fastest, less accurate (75MB)
-# ggml-base.en.bin    - Good balance (157MB)
-# ggml-small.en.bin   - Better accuracy (466MB)
-# ggml-medium.en.bin  - Even better accuracy, slower (1.5GB)
-```
-
-### 2. Configure Settings
-
-When you first run the daemon, you can configure settings through the **Settings UI**:
-
-1. Start the daemon: `./build/sasayaku-daemon`
-2. Click the **⚙️ Settings** button
-3. Configure:
-   - **API Base URL**: `https://api.openai.com/v1` (or local llama.cpp URL)
-   - **API Key**: Your OpenAI API key
-   - **Model**: `gpt-4o-mini`
-   - **Whisper Model Path**: Path to your downloaded model
-   - **Use GPU**: Enable for CUDA acceleration
-4. Click **Save Settings**
-
-**For local llama.cpp:**
-- Base URL: `http://localhost:8080/v1`
-- API Key: (leave empty)
-- Model: `gpt-3.5-turbo`
-
-Alternatively, you can manually edit `~/.config/sasayaku/config.json`.
-
-### 3. Set Up Keyboard Shortcut
-
-In GNOME Settings → Keyboard → View and Customize Shortcuts → Custom Shortcuts:
-
-1. Click "+" to add a new shortcut
-2. Name: "Toggle Sasayaku Recording"
-3. Command: `/usr/local/bin/sasayaku-toggle`
-   (or `~/Projects/github/sasayaku/build/sasayaku-toggle` if not installed)
-4. Shortcut: Press your desired key combination (e.g., Super+Space)
-
-### 4. Start the Daemon
-
-```bash
-# If installed:
-sasayaku-daemon
-
-# Or from build directory:
 ./build/sasayaku-daemon
 ```
 
-The daemon will:
-- Show a recording window with UI controls
-- Register a D-Bus service
-- Load configuration from `~/.config/sasayaku/config.json`
-- Wait for recording commands from UI or keyboard shortcut
+Set up a keyboard shortcut in GNOME Settings pointing to `sasayaku-toggle`.
 
-### 5. Enable Auto-start (Optional)
+Config location: `~/.config/sasayaku/config.json`
 
-To start the daemon automatically on login:
+### Windows
+
+**Prerequisites**: Visual Studio with C++ workload, CMake, curl
 
 ```bash
-# If installed, the desktop file will be in /etc/xdg/autostart/
-# Otherwise, copy it manually:
-mkdir -p ~/.config/autostart
-cp data/sasayaku-daemon.desktop ~/.config/autostart/
-# Edit the Exec= line to point to your binary
+# Build whisper.cpp
+git submodule update --init --recursive
+cd whisper.cpp && mkdir build && cd build
+cmake .. -DCMAKE_BUILD_TYPE=Release
+cmake --build . --config Release
+cd ..\..
+
+# Build Sasayaku
+cd windows
+mkdir build && cd build
+cmake ..
+cmake --build . --config Release
 ```
 
-## Usage
+Or use the build script: `windows\build.bat`
 
-### Basic Recording
+Press **Alt+Space** to toggle recording. The app lives in the system tray.
 
-**Method 1: UI Window**
-1. Click "🎤 Start Recording" button
-2. Speak into your microphone
-3. Click "⏹️  Stop Recording"
-4. Text appears in the window and is copied to clipboard
+Config location: `%APPDATA%\Sasayaku\config.json`
 
-**Method 2: Keyboard Shortcut**
-1. Press your configured keyboard shortcut (e.g., Super+Space)
-2. Speak into your microphone
-3. Press the shortcut again to stop recording
-4. Text appears in the UI window and is copied to clipboard
+## Modes
 
-### Modes
+Sasayaku processes transcriptions through configurable AI modes. Each mode has a **system prompt** (sets the AI's role) and a **user message template** (defaults to `{transcript}`).
 
-Sasayaku supports different modes for different contexts:
+### Built-in Modes
 
-- **Voice to Text**: Simple transcription without AI enhancement
-- **Email Mode**: Formats speech as a professional email
-- **Note Mode**: Converts speech into organized bullet-point notes
-- **Prompt Mode**: Creates detailed AI prompts from your speech
-- **Super Mode**: Uses clipboard content as context for processing
-- **Code Mode**: Generates or explains code from speech
+| Mode | Description |
+|------|-------------|
+| **Voice to Text** | Raw transcription, no AI processing |
+| **Email** | Formats speech as a professional email |
+| **Note** | Converts speech to organized bullet-point notes |
+| **Prompt** | Turns speech into a well-structured AI prompt |
+| **Super** | Uses clipboard content as context for processing |
+| **Code** | Generates or explains code from speech |
 
-### App-Aware Mode Switching
+### Custom Modes
 
-Sasayaku can automatically switch modes based on the active application:
+Create any mode you need in Settings > Modes. Examples:
 
-- Thunderbird/Evolution → Email mode
-- Notes/Gnote → Note mode
-- VS Code/Cursor → Code mode
-- ChatGPT/Claude → Prompt mode
+**Business Japanese translator**:
+- System: `You are a translator. Translate the user's spoken English into formal business Japanese (敬語). Output only the Japanese translation.`
+- User: `{transcript}`
 
-Configure app associations in `~/.config/sasayaku/config.json`:
+**Git commit message**:
+- System: `You write concise git commit messages. Given a description of changes, output a conventional commit message.`
+- User: `{transcript}`
 
-```json
-{
-  "modes": {
-    "email": {
-      "auto_apps": ["thunderbird", "evolution", "geary"]
-    }
-  }
-}
+### App-Aware Switching
+
+Modes can auto-activate based on the foreground app. Configure `auto_apps` in the config file or the Modes editor.
+
+## Architecture
+
+```
+┌──────────────────────────────────────────────────┐
+│                  Shared C++ Core                 │
+│  whisper.cpp │ Audio Processor │ OpenAI Client   │
+│  Mode Manager │ Recording Coordinator │ Config   │
+└──────────────────┬───────────────────────────────┘
+                   │
+    ┌──────────────┼──────────────┐
+    │              │              │
+┌───┴───┐    ┌────┴────┐   ┌────┴─────┐
+│ Linux │    │  macOS  │   │ Windows  │
+│ GTK4  │    │ SwiftUI │   │  Win32   │
+│PipeWire│   │AVAudio  │   │ WASAPI   │
+│ D-Bus │    │ Carbon  │   │ GDI+     │
+└───────┘    └─────────┘   └──────────┘
 ```
 
-### Custom Vocabulary
+The core transcription engine, AI client, mode manager, and config system are shared C++17 code. Each platform provides:
 
-Add custom word mappings in config:
-
-```json
-{
-  "vocabulary": {
-    "API": "API",
-    "Linux": "Linux",
-    "optimize": "optimise"
-  }
-}
-```
-
-### Toggle Command
-
-```bash
-sasayaku-toggle  # Toggle recording on/off
-```
-
-This simple command makes it easy to bind to keyboard shortcuts in GNOME.
+- **Audio capture** — PipeWire (Linux), AVAudioEngine (macOS), WASAPI (Windows)
+- **Clipboard** — GTK (Linux), NSPasteboard (macOS), Win32 (Windows)
+- **Auto-paste** — ydotool (Linux), CGEvent (macOS), SendInput (Windows)
+- **Window tracking** — GNOME Shell (Linux), NSWorkspace (macOS), Win32 (Windows)
+- **UI** — GTK4 (Linux), SwiftUI + floating NSPanel (macOS), GDI+ overlay (Windows)
 
 ## Configuration
 
-Configuration file: `~/.config/sasayaku/config.json`
-
-### Example Configuration
+### Example config
 
 ```json
 {
   "api": {
-    "base_url": "https://api.openai.com/v1",
-    "api_key": "sk-...",
-    "model": "gpt-4o-mini",
+    "base_url": "http://localhost:11434/v1/",
+    "api_key": "ollama",
+    "model": "qwen3:0.6b",
     "temperature": 0.7,
     "max_tokens": 2048
   },
   "whisper": {
-    "model_path": "/home/user/.local/share/sasayaku/models/ggml-large-v3-turbo.bin",
+    "model_path": "/path/to/ggml-small.bin",
     "use_gpu": true,
-    "gpu_device": 0,
-    "n_threads": 4,
     "language": "en"
   },
   "modes": {
-    "voice_to_text": {
-      "name": "Voice to Text",
-      "use_ai": false
-    },
     "email": {
       "name": "Email Mode",
       "use_ai": true,
-      "prompt": "Format as professional email:\n\n{transcript}",
-      "auto_apps": ["thunderbird", "evolution"]
+      "prompt": "You are a professional email writer...",
+      "user_template": "{transcript}",
+      "auto_apps": ["thunderbird", "outlook.exe", "com.apple.mail"]
     }
   },
   "vocabulary": {
     "API": "API",
-    "GPT": "GPT"
+    "Kubernetes": "Kubernetes"
   },
   "default_mode": "voice_to_text"
 }
 ```
 
-## Troubleshooting
+### Template Variables
 
-### Daemon won't start
-
-- Check if whisper model path is correct in config
-- Verify CUDA is working: `nvidia-smi`
-- Check dependencies are installed
-
-### No audio capture
-
-- Verify PipeWire is running: `systemctl --user status pipewire`
-- Check microphone permissions in GNOME Settings
-
-### Auto-paste not working
-
-- Install ydotool: `sudo apt install ydotool`
-- Start ydotool service: `sudo systemctl enable --now ydotoold`
-- Grant input permissions if needed
-
-### D-Bus errors
-
-- Make sure only one instance of sasayaku-daemon is running
-- Check D-Bus session: `gdbus introspect --session --dest org.sasayaku.Daemon --object-path /org/sasayaku/Daemon`
-
-## Architecture
-
-```
-┌─────────────────────┐
-│   User Keyboard     │
-│   Shortcut          │
-└──────────┬──────────┘
-           │
-           v
-┌─────────────────────┐
-│   sasayaku-cli      │ (Sends D-Bus commands)
-└──────────┬──────────┘
-           │
-           v
-┌──────────────────────────────────────────┐
-│         sasayaku-daemon                  │
-│  ┌────────────────────────────────────┐  │
-│  │  D-Bus Service                     │  │
-│  │  - Recording control               │  │
-│  │  - Status queries                  │  │
-│  └────────────────────────────────────┘  │
-│                                          │
-│  ┌────────────────────────────────────┐  │
-│  │  Recording Coordinator             │  │
-│  │  - Audio capture (PipeWire)        │  │
-│  │  - Transcription (whisper.cpp)     │  │
-│  │  - AI processing (OpenAI API)      │  │
-│  └────────────────────────────────────┘  │
-│                                          │
-│  ┌────────────────────────────────────┐  │
-│  │  Mode Manager                      │  │
-│  │  - App-aware mode switching        │  │
-│  │  - Prompt templates                │  │
-│  │  - Vocabulary mapping              │  │
-│  └────────────────────────────────────┘  │
-│                                          │
-│  ┌────────────────────────────────────┐  │
-│  │  System Tray Icon                  │  │
-│  └────────────────────────────────────┘  │
-└──────────────────────────────────────────┘
-```
-
-## Future Enhancements
-
-- [x] Recording window with audio level visualization
-- [x] Settings UI window
-- [ ] Meeting mode with speaker identification
-- [ ] Better Wayland window tracking
-- [ ] Streaming transcription
-- [ ] Offline mode with local LLM
-- [ ] History and editing
-- [ ] System tray icon (waiting for GTK4 solution)
+- `{transcript}` — the transcribed speech
+- `{clipboard}` — current clipboard content (for modes with `requires_clipboard: true`)
 
 ## License
 
@@ -330,6 +246,5 @@ MIT
 
 ## Credits
 
-- Based on [whisper.cpp](https://github.com/ggerganov/whisper.cpp) by Georgi Gerganov
-- Inspired by [SuperWhisper](https://superwhisper.com/) for macOS
-# sasayaku
+- [whisper.cpp](https://github.com/ggerganov/whisper.cpp) by Georgi Gerganov
+- [Ollama](https://ollama.com) for local LLM inference
