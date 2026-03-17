@@ -243,7 +243,7 @@ The core transcription engine, AI client, mode manager, and config system are sh
 
 ## License
 
-MIT
+GPL-3.0 — see [LICENSE](LICENSE) for details.
 
 ## Credits
 
