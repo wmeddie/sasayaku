@@ -79,6 +79,7 @@ class SasayakuHud extends St.BoxLayout {
         // Reposition whenever our size changes.
         this.connect('notify::height', () => this._reposition());
         this.connect('notify::width', () => this._reposition());
+        this._monitorsId = Main.layoutManager.connect('monitors-changed', () => this._reposition());
     }
 
     _addButton(label, onClick) {
@@ -166,6 +167,9 @@ class SasayakuHud extends St.BoxLayout {
     }
 
     destroy() {
+        if (this._monitorsId)
+            Main.layoutManager.disconnect(this._monitorsId);
+        this._monitorsId = 0;
         Main.layoutManager.removeChrome(this);
         super.destroy();
     }

@@ -44,7 +44,8 @@ export class DaemonClient {
         if (!this._proxy)
             return null;
         try {
-            return this._proxy.call_sync(method, params, Gio.DBusCallFlags.NONE, -1, null);
+            // Bounded timeout: a stuck daemon must not freeze GNOME Shell.
+            return this._proxy.call_sync(method, params, Gio.DBusCallFlags.NONE, 1000, null);
         } catch (e) {
             logError(e, `sasayaku: ${method} failed`);
             return null;

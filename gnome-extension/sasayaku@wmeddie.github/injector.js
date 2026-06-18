@@ -8,6 +8,7 @@ export class Injector {
     constructor() {
         this._seat = Clutter.get_default_backend().get_default_seat();
         this._kbd = this._seat.create_virtual_device(Clutter.InputDeviceType.KEYBOARD_DEVICE);
+        this._timeouts = new Set();
     }
 
     setClipboard(text) {
@@ -15,8 +16,11 @@ export class Injector {
     }
 
     // Press (and release) `keyval` while holding the given modifier keyvals.
+    // The virtual input device expects timestamps in microseconds.
     _tap(keyval, modifiers = []) {
-        const t = Clutter.get_current_event_time();
+        if (!this._kbd)
+            return;
+        const t = GLib.get_monotonic_time();
         for (const m of modifiers)
             this._kbd.notify_keyval(t, m, Clutter.KeyState.PRESSED);
         this._kbd.notify_keyval(t, keyval, Clutter.KeyState.PRESSED);
@@ -35,10 +39,12 @@ export class Injector {
                 logError(e, 'sasayaku: failed to activate target window');
             }
         }
-        GLib.timeout_add(GLib.PRIORITY_DEFAULT, 150, () => {
+        const id = GLib.timeout_add(GLib.PRIORITY_DEFAULT, 150, () => {
+            this._timeouts.delete(id);
             fn();
             return GLib.SOURCE_REMOVE;
         });
+        this._timeouts.add(id);
     }
 
     // Set the clipboard to `text`, focus the target window, and send Ctrl+V.
@@ -53,6 +59,9 @@ export class Injector {
     }
 
     destroy() {
+        for (const id of this._timeouts)
+            GLib.source_remove(id);
+        this._timeouts.clear();
         this._kbd = null;
         this._seat = null;
     }
