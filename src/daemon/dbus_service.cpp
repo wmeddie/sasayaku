@@ -9,16 +9,32 @@ static const char* DBUS_INTROSPECTION_XML =
     "    <method name='StartRecording'/>"
     "    <method name='StopRecording'/>"
     "    <method name='ToggleRecording'/>"
-    "    <method name='ShowWindow'/>"
-    "    <method name='ShowSettings'/>"
     "    <method name='Quit'/>"
     "    <method name='GetStatus'>"
     "      <arg type='s' name='status' direction='out'/>"
+    "    </method>"
+    "    <method name='GetModes'>"
+    "      <arg type='a(ss)' name='modes' direction='out'/>"
+    "    </method>"
+    "    <method name='GetCurrentMode'>"
+    "      <arg type='s' name='mode_id' direction='out'/>"
+    "    </method>"
+    "    <method name='SetMode'>"
+    "      <arg type='s' name='mode_id' direction='in'/>"
     "    </method>"
     "    <signal name='RecordingStarted'/>"
     "    <signal name='RecordingStopped'/>"
     "    <signal name='TranscriptionComplete'>"
     "      <arg type='s' name='text'/>"
+    "    </signal>"
+    "    <signal name='StateChanged'>"
+    "      <arg type='s' name='state'/>"
+    "    </signal>"
+    "    <signal name='AudioLevel'>"
+    "      <arg type='d' name='level'/>"
+    "    </signal>"
+    "    <signal name='Error'>"
+    "      <arg type='s' name='message'/>"
     "    </signal>"
     "  </interface>"
     "</node>";
@@ -130,15 +146,28 @@ void DBusService::handle_method_call(
         }
         g_dbus_method_invocation_return_value(invocation, nullptr);
     }
-    else if (g_strcmp0(method_name, "ShowWindow") == 0) {
-        if (service->show_window_callback_) {
-            service->show_window_callback_();
+    else if (g_strcmp0(method_name, "GetModes") == 0) {
+        GVariantBuilder builder;
+        g_variant_builder_init(&builder, G_VARIANT_TYPE("a(ss)"));
+        if (service->get_modes_cb_) {
+            for (const auto& [id, name] : service->get_modes_cb_()) {
+                g_variant_builder_add(&builder, "(ss)", id.c_str(), name.c_str());
+            }
         }
-        g_dbus_method_invocation_return_value(invocation, nullptr);
+        g_dbus_method_invocation_return_value(invocation, g_variant_new("(a(ss))", &builder));
     }
-    else if (g_strcmp0(method_name, "ShowSettings") == 0) {
-        if (service->show_settings_callback_) {
-            service->show_settings_callback_();
+    else if (g_strcmp0(method_name, "GetCurrentMode") == 0) {
+        std::string mode_id;
+        if (service->get_current_mode_cb_) {
+            mode_id = service->get_current_mode_cb_();
+        }
+        g_dbus_method_invocation_return_value(invocation, g_variant_new("(s)", mode_id.c_str()));
+    }
+    else if (g_strcmp0(method_name, "SetMode") == 0) {
+        const gchar* mode_id = nullptr;
+        g_variant_get(parameters, "(&s)", &mode_id);
+        if (service->set_mode_cb_ && mode_id) {
+            service->set_mode_cb_(mode_id);
         }
         g_dbus_method_invocation_return_value(invocation, nullptr);
     }
@@ -218,6 +247,33 @@ void DBusService::emit_transcription_complete(const std::string& text) {
         std::cerr << "Error emitting signal: " << error->message << std::endl;
         g_error_free(error);
     }
+}
+
+void DBusService::emit_state_changed(const std::string& state) {
+    if (!connection_) return;
+    GError* error = nullptr;
+    g_dbus_connection_emit_signal(
+        connection_, nullptr, "/org/sasayaku/Daemon", "org.sasayaku.Daemon",
+        "StateChanged", g_variant_new("(s)", state.c_str()), &error);
+    if (error) { std::cerr << "Error emitting StateChanged: " << error->message << std::endl; g_error_free(error); }
+}
+
+void DBusService::emit_audio_level(double level) {
+    if (!connection_) return;
+    GError* error = nullptr;
+    g_dbus_connection_emit_signal(
+        connection_, nullptr, "/org/sasayaku/Daemon", "org.sasayaku.Daemon",
+        "AudioLevel", g_variant_new("(d)", level), &error);
+    if (error) { std::cerr << "Error emitting AudioLevel: " << error->message << std::endl; g_error_free(error); }
+}
+
+void DBusService::emit_error(const std::string& message) {
+    if (!connection_) return;
+    GError* error = nullptr;
+    g_dbus_connection_emit_signal(
+        connection_, nullptr, "/org/sasayaku/Daemon", "org.sasayaku.Daemon",
+        "Error", g_variant_new("(s)", message.c_str()), &error);
+    if (error) { std::cerr << "Error emitting Error: " << error->message << std::endl; g_error_free(error); }
 }
 
 } // namespace sasayaku
