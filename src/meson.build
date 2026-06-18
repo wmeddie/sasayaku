@@ -82,3 +82,10 @@ sasayaku_cli = executable('sasayaku-cli',
   dependencies: [gio_dep],
   install: true,
 )
+
+# Unit tests
+test_dbus_helpers = executable('test-dbus-helpers',
+  ['daemon/dbus_helpers.cpp', 'daemon/dbus_helpers_test.cpp'],
+  install: false,
+)
+test('dbus_helpers', test_dbus_helpers)
