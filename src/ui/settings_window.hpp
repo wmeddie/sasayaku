@@ -38,6 +38,9 @@ public:
     // Set models directory for download/scan
     void set_models_dir(const std::string& dir) { models_dir_ = dir; }
 
+    // Progress bar widget, accessed by the curl download progress callback
+    GtkWidget* download_progress_bar() const { return download_progress_; }
+
 private:
     GtkWidget* window_ = nullptr;
     GtkWidget* api_base_url_entry_ = nullptr;

@@ -20,22 +20,6 @@ struct AudioCapture::PlatformImpl {
     pw_stream* stream = nullptr;
 };
 
-// PipeWire stream callback
-static void on_process_pw(void* userdata) {
-    auto* capture = static_cast<AudioCapture*>(userdata);
-
-    // Access stream through platform impl via a stored pointer
-    // We store the stream pointer in userdata context
-    auto& platform = *static_cast<AudioCapture::PlatformImpl*>(
-        // We need the stream from the capture object - use a helper
-        nullptr  // placeholder
-    );
-
-    // Actually, we pass AudioCapture* as userdata, so we need another way
-    // to get the stream. Let's use a wrapper struct.
-    (void)capture;
-}
-
 // We need a wrapper to pass both capture and stream
 struct PipeWireCallbackData {
     AudioCapture* capture;

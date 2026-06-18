@@ -37,7 +37,20 @@ libsasayaku_ai = static_library('sasayaku_ai',
 # Build utils library
 libsasayaku_utils = static_library('sasayaku_utils',
   utils_sources,
-  dependencies: [gio_dep, json_dep],
+  dependencies: [gio_dep, json_dep, gtk_dep],
+  install: false,
+)
+
+# UI sources
+ui_sources = files(
+  'ui/recording_window.cpp',
+  'ui/settings_window.cpp',
+)
+
+# UI library (used by daemon)
+libsasayaku_ui = static_library('sasayaku_ui',
+  ui_sources,
+  dependencies: [gtk_dep, libadwaita_dep, gio_dep, curl_dep],
   install: false,
 )
 
@@ -53,7 +66,7 @@ daemon_sources = files(
 # Daemon executable
 sasayaku_daemon = executable('sasayaku-daemon',
   daemon_sources,
-  link_with: [libsasayaku_core, libsasayaku_ai, libsasayaku_utils],
+  link_with: [libsasayaku_core, libsasayaku_ai, libsasayaku_utils, libsasayaku_ui],
   dependencies: [gtk_dep, libadwaita_dep, gio_dep, threads_dep, whisper_lib],
   include_directories: [whisper_include],
   install: true,
@@ -69,19 +82,3 @@ sasayaku_cli = executable('sasayaku-cli',
   dependencies: [gio_dep],
   install: true,
 )
-
-# UI sources
-ui_sources = files(
-  'ui/recording_window.cpp',
-  'ui/settings_window.cpp',
-)
-
-# UI library (used by daemon)
-libsasayaku_ui = static_library('sasayaku_ui',
-  ui_sources,
-  dependencies: [gtk_dep, libadwaita_dep, gio_dep],
-  install: false,
-)
-
-# Link UI library with daemon
-sasayaku_daemon_link = [libsasayaku_core, libsasayaku_ai, libsasayaku_utils, libsasayaku_ui]

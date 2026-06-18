@@ -278,7 +278,7 @@ static int download_progress_callback(void* clientp, curl_off_t dltotal, curl_of
             gtk_progress_bar_set_fraction(GTK_PROGRESS_BAR(pair->first), pair->second);
             delete pair;
             return G_SOURCE_REMOVE;
-        }, new std::pair<GtkWidget*, double>(ctx->window->download_progress_, fraction));
+        }, new std::pair<GtkWidget*, double>(ctx->window->download_progress_bar(), fraction));
     }
     return 0;
 }
