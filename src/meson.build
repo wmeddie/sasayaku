@@ -41,33 +41,22 @@ libsasayaku_utils = static_library('sasayaku_utils',
   install: false,
 )
 
-# UI sources
-ui_sources = files(
-  'ui/recording_window.cpp',
-  'ui/settings_window.cpp',
-)
-
-# UI library (used by daemon)
-libsasayaku_ui = static_library('sasayaku_ui',
-  ui_sources,
-  dependencies: [gtk_dep, libadwaita_dep, gio_dep, curl_dep],
-  install: false,
-)
-
-# Daemon sources
+# Daemon sources (headless: the GNOME extension provides the UI)
 daemon_sources = files(
   'daemon/main.cpp',
   'daemon/dbus_service.cpp',
+  'daemon/dbus_helpers.cpp',
   'daemon/mode_manager.cpp',
   'daemon/window_tracker.cpp',
   'daemon/recording_coordinator.cpp',
 )
 
-# Daemon executable
+# Daemon executable. Still links gtk_dep transitively via libsasayaku_utils
+# (clipboard uses GdkClipboard); libadwaita is no longer needed.
 sasayaku_daemon = executable('sasayaku-daemon',
   daemon_sources,
-  link_with: [libsasayaku_core, libsasayaku_ai, libsasayaku_utils, libsasayaku_ui],
-  dependencies: [gtk_dep, libadwaita_dep, gio_dep, threads_dep, whisper_lib],
+  link_with: [libsasayaku_core, libsasayaku_ai, libsasayaku_utils],
+  dependencies: [gtk_dep, gio_dep, threads_dep, whisper_lib],
   include_directories: [whisper_include],
   install: true,
 )

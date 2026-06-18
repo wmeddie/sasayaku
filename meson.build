@@ -11,7 +11,6 @@ project('sasayaku', ['c', 'cpp'],
 
 # Dependencies
 gtk_dep = dependency('gtk4', version: '>= 4.0')
-libadwaita_dep = dependency('libadwaita-1', version: '>= 1.0')
 gio_dep = dependency('gio-2.0', version: '>= 2.66')
 pipewire_dep = dependency('libpipewire-0.3', version: '>= 0.3')
 spa_dep = dependency('libspa-0.2', version: '>= 0.2')
@@ -81,7 +80,6 @@ summary({
 
 summary({
   'GTK4': gtk_dep.found(),
-  'libadwaita': libadwaita_dep.found(),
   'PipeWire': pipewire_dep.found(),
   'libcurl': curl_dep.found(),
 }, section: 'Dependencies')
