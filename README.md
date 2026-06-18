@@ -91,7 +91,7 @@ Config location: `~/Library/Application Support/Sasayaku/config.json`
 
 ### Linux (GNOME/Wayland)
 
-**Prerequisites**: GTK4, libadwaita, PipeWire, Meson, CUDA toolkit (optional)
+**Prerequisites**: GTK4, libadwaita, PipeWire, Meson, Vulkan (GPU acceleration)
 
 ```bash
 # Install dependencies (Ubuntu/Fedora)
@@ -99,12 +99,13 @@ sudo apt install build-essential meson pkg-config cmake
 sudo apt install libgtk-4-dev libadwaita-1-dev libgio-2.0-dev
 sudo apt install libpipewire-0.3-dev libspa-0.2-dev
 sudo apt install libcurl4-openssl-dev nlohmann-json3-dev
+sudo apt install glslc libvulkan-dev mesa-vulkan-drivers  # GPU acceleration via Vulkan
 sudo apt install ydotool  # Optional: for auto-pasting
 
-# Build whisper.cpp
+# Build whisper.cpp with the Vulkan GPU backend (AMD/Intel/NVIDIA via the Vulkan loader)
 git submodule update --init --recursive
 cd whisper.cpp && mkdir build && cd build
-cmake .. -DGGML_CUDA=ON -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=ON
+cmake .. -DGGML_VULKAN=ON -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=ON
 cmake --build . -j$(nproc)
 cd ../..
 

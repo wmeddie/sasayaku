@@ -48,7 +48,7 @@ Click the **⚙️ Settings** button in the window to configure:
 - **API Key**: Your OpenAI API key (or leave empty for local llama.cpp)
 - **Model**: `gpt-4o-mini` (or any model name your API supports)
 - **Whisper Model Path**: Should auto-populate with `~/.local/share/sasayaku/models/ggml-large-v3-turbo.bin`
-- **Use GPU**: Enable for CUDA acceleration (recommended)
+- **Use GPU**: Enable for Vulkan GPU acceleration (recommended)
 
 **For local llama.cpp (no API costs):**
 - Base URL: `http://localhost:8080/v1`
@@ -82,7 +82,7 @@ cd ~/Projects/github/sasayaku
 
 The daemon will:
 - Register D-Bus service `org.sasayaku.Daemon`
-- Load whisper model with CUDA acceleration
+- Load whisper model with Vulkan GPU acceleration
 - Wait for recording commands
 - Show this message: "Use 'sasayaku-cli toggle-recording' to start/stop recording"
 
@@ -134,7 +134,7 @@ The mode can be set in the config file's `default_mode` field.
 
 ### Daemon won't start
 - **Check whisper model path** in config.json
-- **Verify CUDA:** `nvidia-smi`
+- **Verify Vulkan GPU:** `vulkaninfo --summary` (or check daemon logs for `ggml_vulkan: Found ... Vulkan devices`)
 - **Check logs:** Run daemon in terminal to see errors
 
 ### No transcription output
@@ -154,7 +154,7 @@ The mode can be set in the config file's `default_mode` field.
 
 ## What's Working
 
-✅ Whisper.cpp transcription with CUDA
+✅ Whisper.cpp transcription with Vulkan GPU acceleration
 ✅ PipeWire audio capture
 ✅ OpenAI API integration (custom base URL supported)
 ✅ Multiple AI-enhanced modes
@@ -188,7 +188,7 @@ The mode can be set in the config file's `default_mode` field.
   - `ggml-base.en.bin` - Good balance (157MB)
   - `ggml-small.en.bin` - More accurate (466MB)
 
-- **GPU acceleration:** Enabled by default in config, uses CUDA
+- **GPU acceleration:** Enabled by default in config, uses Vulkan
 - **Large-v3-turbo notes:** This is the latest turbo model - optimized for both speed and accuracy
 
 - **API costs:** Use local llama.cpp to avoid API costs
