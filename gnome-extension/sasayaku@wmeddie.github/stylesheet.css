@@ -1,0 +1,51 @@
+.sasayaku-recording {
+    color: #e01b24;
+}
+
+.sasayaku-hud {
+    background-color: rgba(30, 30, 30, 0.92);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 16px;
+    padding: 16px;
+    spacing: 10px;
+    color: #ffffff;
+}
+
+.sasayaku-status {
+    font-size: 13px;
+    color: #cccccc;
+}
+
+.sasayaku-waveform {
+    spacing: 2px;
+    height: 52px;
+}
+
+.sasayaku-bar {
+    background-color: #62a0ea;
+    border-radius: 3px;
+}
+
+.sasayaku-entry {
+    min-height: 84px;
+    font-size: 15px;
+    color: #ffffff;
+    background-color: rgba(255, 255, 255, 0.06);
+    border-radius: 8px;
+    padding: 8px;
+}
+
+.sasayaku-buttons {
+    spacing: 6px;
+}
+
+.sasayaku-button {
+    padding: 6px 12px;
+    border-radius: 8px;
+    background-color: rgba(255, 255, 255, 0.10);
+    color: #ffffff;
+}
+
+.sasayaku-button:hover {
+    background-color: rgba(255, 255, 255, 0.18);
+}

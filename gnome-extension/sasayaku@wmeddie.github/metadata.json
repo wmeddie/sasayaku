@@ -1,0 +1,9 @@
+{
+  "uuid": "sasayaku@wmeddie.github",
+  "name": "Sasayaku",
+  "description": "Voice dictation HUD and controls for the Sasayaku daemon: panel indicator, recording overlay with editable transcription, copy/paste into the active window, and a global hotkey.",
+  "shell-version": ["50"],
+  "url": "https://github.com/wmeddie/sasayaku",
+  "settings-schema": "org.gnome.shell.extensions.sasayaku",
+  "version": 1
+}

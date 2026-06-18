@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schemalist>
+  <schema id="org.gnome.shell.extensions.sasayaku"
+          path="/org/gnome/shell/extensions/sasayaku/">
+    <key name="toggle-recording" type="as">
+      <default>["&lt;Control&gt;&lt;Alt&gt;space"]</default>
+      <summary>Toggle recording</summary>
+      <description>Global shortcut to start and stop dictation.</description>
+    </key>
+  </schema>
+</schemalist>
