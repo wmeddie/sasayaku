@@ -76,9 +76,9 @@ Expected: exit 0.
 
 Run:
 ```bash
-ls -1 whisper.cpp/build/ggml/src/libggml-vulkan.so* whisper.cpp/build/ggml/src/libggml-cpu.so*
+ls -1 whisper.cpp/build/ggml/src/ggml-vulkan/libggml-vulkan.so* whisper.cpp/build/ggml/src/libggml-cpu.so*
 ```
-Expected: both `libggml-vulkan.so*` (new) and `libggml-cpu.so*` (CPU fallback retained) are listed.
+Expected: both `libggml-vulkan.so*` (new — note it lands in a `ggml-vulkan/` subdir) and `libggml-cpu.so*` (CPU fallback retained) are listed. `libggml.so` carries `NEEDED libggml-vulkan.so.0` plus a RUNPATH into that subdir, so any consumer of `libggml.so` gets the GPU backend automatically.
 
 - [ ] **Step 6: Verify the Radeon device is detected at runtime**
 
@@ -102,6 +102,8 @@ Expected: a line like `ggml_vulkan: Found 1 Vulkan devices:` and the device name
 **Interfaces:**
 - Consumes: `libggml-vulkan.so` from Task 1.
 - Produces: `sasayaku-daemon` linked against the Vulkan backend with a runtime rpath that resolves it.
+
+> **Implementation note (from execution):** the Vulkan lib is in the `ggml-vulkan/` subdir, so define `ggml_vulkan_libdir = ggml_libdir / 'ggml-vulkan'` and pass that to `find_library` and the rpath (not `ggml_libdir`). The code below uses that variable.
 
 - [ ] **Step 1: Add `ggml-vulkan` to the whisper dependency block**
 
@@ -130,11 +132,14 @@ ggml_found = cpp_compiler.find_library('ggml', dirs: [ggml_libdir], required: fa
 ggml_base_found = cpp_compiler.find_library('ggml-base', dirs: [ggml_libdir], required: false)
 ggml_cpu_found = cpp_compiler.find_library('ggml-cpu', dirs: [ggml_libdir], required: false)
 # Optional GPU backend; present only when whisper.cpp was built with -DGGML_VULKAN=ON.
-ggml_vulkan_found = cpp_compiler.find_library('ggml-vulkan', dirs: [ggml_libdir], required: false)
+ggml_vulkan_libdir = ggml_libdir / 'ggml-vulkan'
+ggml_vulkan_found = cpp_compiler.find_library('ggml-vulkan', dirs: [ggml_vulkan_libdir], required: false)
 
 whisper_deps = [whisper_found, ggml_found, ggml_base_found, ggml_cpu_found]
+whisper_rpaths = ['-Wl,-rpath,' + whisper_libdir, '-Wl,-rpath,' + ggml_libdir]
 if ggml_vulkan_found.found()
   whisper_deps += ggml_vulkan_found
+  whisper_rpaths += '-Wl,-rpath,' + ggml_vulkan_libdir
 endif
 
 if whisper_found.found()
