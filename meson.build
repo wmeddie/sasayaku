@@ -31,15 +31,40 @@ endif
 whisper_cpp_dir = meson.current_source_dir() / 'whisper.cpp'
 whisper_include = include_directories('whisper.cpp/include', 'whisper.cpp/ggml/include')
 
-# We'll link against pre-built whisper.cpp libraries
-whisper_lib = meson.get_compiler('cpp').find_library('whisper',
-  dirs: [whisper_cpp_dir / 'build'],
-  required: false
-)
+# We'll link against pre-built whisper.cpp libraries.
+# Current whisper.cpp emits shared libs under build/src and build/ggml/src.
+cpp_compiler = meson.get_compiler('cpp')
+whisper_build = whisper_cpp_dir / 'build'
+whisper_libdir = whisper_build / 'src'
+ggml_libdir = whisper_build / 'ggml' / 'src'
 
-if not whisper_lib.found()
-  # whisper.cpp not built yet, we'll handle this in a custom target
-  message('whisper.cpp not found in whisper.cpp/build - will need to build it first')
+# The Vulkan GPU backend, when built (-DGGML_VULKAN=ON), lands in a ggml-vulkan subdir.
+ggml_vulkan_libdir = ggml_libdir / 'ggml-vulkan'
+
+whisper_found = cpp_compiler.find_library('whisper', dirs: [whisper_libdir], required: false)
+ggml_found = cpp_compiler.find_library('ggml', dirs: [ggml_libdir], required: false)
+ggml_base_found = cpp_compiler.find_library('ggml-base', dirs: [ggml_libdir], required: false)
+ggml_cpu_found = cpp_compiler.find_library('ggml-cpu', dirs: [ggml_libdir], required: false)
+# Optional GPU backend; present only when whisper.cpp was built with -DGGML_VULKAN=ON.
+ggml_vulkan_found = cpp_compiler.find_library('ggml-vulkan', dirs: [ggml_vulkan_libdir], required: false)
+
+whisper_deps = [whisper_found, ggml_found, ggml_base_found, ggml_cpu_found]
+whisper_rpaths = ['-Wl,-rpath,' + whisper_libdir, '-Wl,-rpath,' + ggml_libdir]
+if ggml_vulkan_found.found()
+  whisper_deps += ggml_vulkan_found
+  whisper_rpaths += '-Wl,-rpath,' + ggml_vulkan_libdir
+endif
+
+if whisper_found.found()
+  # Bundle whisper + ggml and bake in an rpath so the daemon finds the .so's at runtime.
+  whisper_lib = declare_dependency(
+    dependencies: whisper_deps,
+    include_directories: whisper_include,
+    link_args: whisper_rpaths,
+  )
+else
+  # whisper.cpp not built yet - build it first (see README)
+  message('whisper.cpp not found in ' + whisper_libdir + ' - will need to build it first')
   whisper_lib = declare_dependency()
 endif
 
