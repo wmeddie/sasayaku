@@ -74,7 +74,9 @@ class SasayakuHud extends St.BoxLayout {
         // Fixed width (St CSS does not reliably honor `width`); children wrap within.
         this.set_width(600);
 
-        Main.layoutManager.addChrome(this, { affectsInputRegion: true });
+        // GNOME 50: addChrome tracks the input region by default; it only
+        // accepts trackFullscreen/affectsStruts, so pass no options here.
+        Main.layoutManager.addChrome(this);
 
         // Reposition whenever our size changes.
         this.connect('notify::height', () => this._reposition());
