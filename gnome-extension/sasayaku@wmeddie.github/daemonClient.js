@@ -9,7 +9,7 @@ const IFACE = 'org.sasayaku.Daemon';
 export class DaemonClient {
     constructor() {
         this._proxy = null;
-        this._signalIds = [];
+        this._subId = 0;
         this._handlers = {};
     }
 
@@ -24,27 +24,42 @@ export class DaemonClient {
         } catch (e) {
             logError(e, 'sasayaku: failed to create daemon proxy');
             this._proxy = null;
-            return;
         }
 
-        console.log(`[sasayaku] proxy created; nameOwner=${this._proxy.get_name_owner()}`);
-        this._proxy.connect('notify::g-name-owner', () => {
-            console.log(`[sasayaku] g-name-owner -> ${this._proxy.get_name_owner()}`);
-        });
+        if (this._proxy) {
+            console.log(`[sasayaku] proxy created; nameOwner=${this._proxy.get_name_owner()}`);
+            this._proxy.connect('notify::g-name-owner', () => {
+                console.log(`[sasayaku] g-name-owner -> ${this._proxy.get_name_owner()}`);
+            });
+        }
 
-        const connect = (name, fn) => {
-            this._signalIds.push(this._proxy.connectSignal(name, fn));
-        };
-        connect('StateChanged', (_p, _s, [state]) => {
-            console.log(`[sasayaku] signal StateChanged: ${state}`);
-            this._handlers.onState?.(state);
-        });
-        connect('AudioLevel', (_p, _s, [level]) => this._handlers.onAudioLevel?.(level));
-        connect('TranscriptionComplete', (_p, _s, [text]) => {
-            console.log(`[sasayaku] signal TranscriptionComplete: ${text.length} chars`);
-            this._handlers.onTranscription?.(text);
-        });
-        connect('Error', (_p, _s, [msg]) => this._handlers.onError?.(msg));
+        // Subscribe to the daemon's signals directly on the session bus with
+        // sender=null. A GDBusProxy created while the name is unowned (the daemon
+        // starts after login) misses signals from the late owner; a sender=null
+        // connection subscription matches them regardless of start order/restarts.
+        this._subId = Gio.DBus.session.signal_subscribe(
+            null, IFACE, null, OBJECT_PATH, null, Gio.DBusSignalFlags.NONE,
+            (_conn, _sender, _path, _iface, signalName, params) => {
+                const args = params.deepUnpack();
+                switch (signalName) {
+                case 'StateChanged':
+                    console.log(`[sasayaku] signal StateChanged: ${args[0]}`);
+                    this._handlers.onState?.(args[0]);
+                    break;
+                case 'AudioLevel':
+                    this._handlers.onAudioLevel?.(args[0]);
+                    break;
+                case 'TranscriptionComplete':
+                    console.log(`[sasayaku] signal TranscriptionComplete: ${args[0].length} chars`);
+                    this._handlers.onTranscription?.(args[0]);
+                    break;
+                case 'Error':
+                    console.log(`[sasayaku] signal Error: ${args[0]}`);
+                    this._handlers.onError?.(args[0]);
+                    break;
+                }
+            });
+        console.log('[sasayaku] subscribed to daemon signals (sender=null)');
     }
 
     get available() {
@@ -72,8 +87,9 @@ export class DaemonClient {
         this._proxy.call(method, params, Gio.DBusCallFlags.NONE, -1, null, (proxy, res) => {
             try {
                 proxy.call_finish(res);
+                console.log(`[sasayaku] call ${method} -> ok`);
             } catch (e) {
-                logError(e, `sasayaku: ${method} failed`);
+                console.log(`[sasayaku] call ${method} -> ERROR: ${e.message}`);
             }
         });
     }
@@ -102,11 +118,10 @@ export class DaemonClient {
     }
 
     destroy() {
-        if (this._proxy) {
-            for (const id of this._signalIds)
-                this._proxy.disconnectSignal(id);
+        if (this._subId) {
+            Gio.DBus.session.signal_unsubscribe(this._subId);
+            this._subId = 0;
         }
-        this._signalIds = [];
         this._proxy = null;
         this._handlers = {};
     }
