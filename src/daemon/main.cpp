@@ -103,16 +103,11 @@ private:
     }
 
     void start_recording() {
-        std::string active_app = window_tracker_->get_active_app_id();
-        if (!active_app.empty()) {
-            std::string mode_for_app = mode_manager_->get_mode_for_app(active_app);
-            if (mode_for_app != mode_manager_->get_current_mode()) {
-                std::cout << "Auto-switching to mode: " << mode_for_app
-                          << " for app: " << active_app << std::endl;
-                mode_manager_->set_current_mode(mode_for_app);
-            }
-        }
-
+        // NOTE: app-based auto mode-switching used to query GNOME Shell here via
+        // a blocking `gdbus ... Shell.Eval`. That deadlocks when the caller is the
+        // Shell extension (Shell waits on us; we'd wait on Shell) and Eval is
+        // disabled on GNOME 50. Active-window detection will move into the
+        // extension (which has Meta access) and arrive via SetMode.
         if (recording_coordinator_->start_recording()) {
             std::cout << "Recording started" << std::endl;
             dbus_service_->emit_recording_started();

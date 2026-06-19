@@ -18,7 +18,10 @@ export default class SasayakuExtension extends Extension {
         this._client.connectDaemon({
             onState: (s) => this._onState(s),
             onAudioLevel: (l) => this._hud?.setLevel(l),
-            onTranscription: (t) => this._hud?.showResult(t),
+            onTranscription: (t) => {
+                this._injector?.setClipboard(t);
+                this._hud?.showResult(t);
+            },
             onError: (m) => this._hud?.showError(m),
         });
 
@@ -71,9 +74,8 @@ export default class SasayakuExtension extends Extension {
             Main.notify('Sasayaku', 'The Sasayaku daemon is not running.');
             return;
         }
-        // If we are about to start, capture the target window before the HUD appears.
-        if (this._client.getStatus() !== 'recording')
-            this._focus.snapshot();
+        // Snapshot the target window before toggling (harmless when stopping).
+        this._focus.snapshot();
         this._client.toggleRecording();
     }
 

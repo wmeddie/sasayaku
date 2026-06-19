@@ -52,9 +52,24 @@ export class DaemonClient {
         }
     }
 
-    toggleRecording() { this._call('ToggleRecording'); }
-    startRecording() { this._call('StartRecording'); }
-    stopRecording() { this._call('StopRecording'); }
+    // Fire-and-forget async call: never blocks the GNOME Shell main loop.
+    // A synchronous call here can deadlock (the daemon may call back into the
+    // Shell) and would stall delivery of StateChanged/AudioLevel signals.
+    _callAsync(method, params = null) {
+        if (!this._proxy)
+            return;
+        this._proxy.call(method, params, Gio.DBusCallFlags.NONE, -1, null, (proxy, res) => {
+            try {
+                proxy.call_finish(res);
+            } catch (e) {
+                logError(e, `sasayaku: ${method} failed`);
+            }
+        });
+    }
+
+    toggleRecording() { this._callAsync('ToggleRecording'); }
+    startRecording() { this._callAsync('StartRecording'); }
+    stopRecording() { this._callAsync('StopRecording'); }
 
     getStatus() {
         const r = this._call('GetStatus');
@@ -72,7 +87,7 @@ export class DaemonClient {
     }
 
     setMode(id) {
-        this._call('SetMode', new GLib.Variant('(s)', [id]));
+        this._callAsync('SetMode', new GLib.Variant('(s)', [id]));
     }
 
     destroy() {

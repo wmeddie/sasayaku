@@ -101,9 +101,9 @@ void RecordingCoordinator::on_transcription_complete(
 
     std::cout << "Processed text: " << processed_text << std::endl;
 
-    // Copy to clipboard only (no auto-paste)
-    Clipboard::set_text(processed_text);
-    std::cout << "Text copied to clipboard (" << processed_text.length() << " chars)" << std::endl;
+    // Clipboard + paste are handled by the GNOME Shell extension (St.Clipboard);
+    // a headless daemon has no GDK display to write the system clipboard itself.
+    std::cout << "Transcription ready (" << processed_text.length() << " chars)" << std::endl;
 
     if (callback) {
         callback(processed_text, true);
