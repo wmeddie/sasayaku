@@ -67,9 +67,11 @@ export default class SasayakuExtension extends Extension {
             this._indicator.setModes(this._client.getModes());
             this._indicator.setState(this._client.getStatus());
         }
+        console.log(`[sasayaku] enabled; daemon available=${this._client.available}`);
     }
 
     _onToggle() {
+        console.log(`[sasayaku] _onToggle; daemon available=${this._client.available}`);
         if (!this._client.available) {
             Main.notify('Sasayaku', 'The Sasayaku daemon is not running.');
             return;
@@ -80,6 +82,7 @@ export default class SasayakuExtension extends Extension {
     }
 
     _onState(state) {
+        console.log(`[sasayaku] _onState: ${state}`);
         this._indicator?.setState(state);
         switch (state) {
         case 'recording':

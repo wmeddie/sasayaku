@@ -27,12 +27,23 @@ export class DaemonClient {
             return;
         }
 
+        console.log(`[sasayaku] proxy created; nameOwner=${this._proxy.get_name_owner()}`);
+        this._proxy.connect('notify::g-name-owner', () => {
+            console.log(`[sasayaku] g-name-owner -> ${this._proxy.get_name_owner()}`);
+        });
+
         const connect = (name, fn) => {
             this._signalIds.push(this._proxy.connectSignal(name, fn));
         };
-        connect('StateChanged', (_p, _s, [state]) => this._handlers.onState?.(state));
+        connect('StateChanged', (_p, _s, [state]) => {
+            console.log(`[sasayaku] signal StateChanged: ${state}`);
+            this._handlers.onState?.(state);
+        });
         connect('AudioLevel', (_p, _s, [level]) => this._handlers.onAudioLevel?.(level));
-        connect('TranscriptionComplete', (_p, _s, [text]) => this._handlers.onTranscription?.(text));
+        connect('TranscriptionComplete', (_p, _s, [text]) => {
+            console.log(`[sasayaku] signal TranscriptionComplete: ${text.length} chars`);
+            this._handlers.onTranscription?.(text);
+        });
         connect('Error', (_p, _s, [msg]) => this._handlers.onError?.(msg));
     }
 
