@@ -2,6 +2,7 @@
 // (so it never becomes a focus-stealing application window).
 import GObject from 'gi://GObject';
 import St from 'gi://St';
+import Clutter from 'gi://Clutter';
 import Pango from 'gi://Pango';
 
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
@@ -15,7 +16,7 @@ class SasayakuHud extends St.BoxLayout {
     _init(callbacks) {
         super._init({
             style_class: 'sasayaku-hud',
-            vertical: true,
+            orientation: Clutter.Orientation.VERTICAL,
             reactive: true,
             track_hover: true,
             can_focus: true,
