@@ -112,10 +112,22 @@ cd ../..
 # Build Sasayaku
 meson setup build
 meson compile -C build
-./build/sasayaku-daemon
+
+# Install the daemon + D-Bus service file (user prefix, no sudo)
+meson configure build -Dprefix="$HOME/.local"
+meson install -C build
+
+# Install the GNOME Shell extension
+./gnome-extension/install.sh
 ```
 
-Set up a keyboard shortcut in GNOME Settings pointing to `sasayaku-toggle`.
+Then **log out and back in** (Wayland only loads new extensions at login) and enable it:
+
+```bash
+gnome-extensions enable sasayaku@wmeddie.github
+```
+
+The extension provides a top-bar mic indicator, the recording HUD, and a global hotkey (default **Ctrl+Alt+Space**). It **auto-starts the daemon** via D-Bus activation — no need to run it manually. Adjust the hotkey and review settings in the extension's preferences.
 
 Config location: `~/.config/sasayaku/config.json`
 

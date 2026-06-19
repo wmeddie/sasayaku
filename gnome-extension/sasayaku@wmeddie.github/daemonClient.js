@@ -66,6 +66,26 @@ export class DaemonClient {
         return this._proxy !== null && this._proxy.get_name_owner() !== null;
     }
 
+    // Ask the session bus to D-Bus-activate the daemon. Works once the
+    // org.sasayaku.Daemon.service file is installed (see meson install). Async,
+    // so login is never blocked while the daemon loads its model.
+    ensureRunning() {
+        if (this.available)
+            return;
+        Gio.DBus.session.call(
+            'org.freedesktop.DBus', '/org/freedesktop/DBus', 'org.freedesktop.DBus',
+            'StartServiceByName', new GLib.Variant('(su)', [BUS_NAME, 0]),
+            null, Gio.DBusCallFlags.NONE, -1, null,
+            (conn, res) => {
+                try {
+                    conn.call_finish(res);
+                    console.log('[sasayaku] daemon activation requested');
+                } catch (e) {
+                    console.log(`[sasayaku] daemon activation failed (is it installed?): ${e.message}`);
+                }
+            });
+    }
+
     _call(method, params = null) {
         if (!this._proxy)
             return null;

@@ -25,6 +25,9 @@ export default class SasayakuExtension extends Extension {
         this._state = 'idle';
         this._dismissed = false;
 
+        // Launch the daemon (D-Bus activation) if it is not already running.
+        this._client.ensureRunning();
+
         this._focus = new FocusTracker();
         this._focus.enable();
 
