@@ -1,51 +1,86 @@
+/* Panel indicator tint while recording */
 .sasayaku-recording {
-    color: #e01b24;
+    color: #ff453a;
 }
 
+/* HUD surface — dark glass, matching the macOS overlay */
 .sasayaku-hud {
-    background-color: rgba(30, 30, 30, 0.92);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: 16px;
-    padding: 16px;
-    spacing: 10px;
+    background-color: rgba(22, 22, 24, 0.92);
+    border: 1px solid rgba(255, 255, 255, 0.10);
+    border-radius: 18px;
+    padding: 18px 20px;
+    spacing: 12px;
     color: #ffffff;
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.45);
 }
+
+/* Status row: colored dot + label */
+.sasayaku-statusrow {
+    spacing: 8px;
+}
+
+.sasayaku-dot {
+    border-radius: 5px;
+    background-color: rgba(255, 255, 255, 0.4);
+}
+
+.sasayaku-dot-recording { background-color: #ff453a; }
+.sasayaku-dot-processing { background-color: #0a84ff; }
+.sasayaku-dot-done { background-color: #30d158; }
+.sasayaku-dot-error { background-color: #ff9f0a; }
 
 .sasayaku-status {
-    font-size: 13px;
-    color: #cccccc;
+    font-size: 12px;
+    font-weight: bold;
+    color: rgba(255, 255, 255, 0.6);
 }
 
+/* Waveform — thin white bars */
 .sasayaku-waveform {
     spacing: 2px;
-    height: 52px;
 }
 
 .sasayaku-bar {
-    background-color: #62a0ea;
-    border-radius: 3px;
+    background-color: rgba(255, 255, 255, 0.85);
+    border-radius: 2px;
 }
 
+/* Editable transcription */
 .sasayaku-entry {
-    min-height: 84px;
+    min-height: 88px;
     font-size: 15px;
     color: #ffffff;
-    background-color: rgba(255, 255, 255, 0.06);
-    border-radius: 8px;
-    padding: 8px;
+    background-color: rgba(255, 255, 255, 0.07);
+    border: 1px solid rgba(255, 255, 255, 0.10);
+    border-radius: 10px;
+    padding: 10px 12px;
 }
 
+.sasayaku-entry:focus {
+    border: 1px solid rgba(10, 132, 255, 0.85);
+}
+
+/* Buttons — quiet glass pills, one accented primary (Paste) */
 .sasayaku-buttons {
-    spacing: 6px;
+    spacing: 8px;
 }
 
 .sasayaku-button {
-    padding: 6px 12px;
-    border-radius: 8px;
+    padding: 7px 14px;
+    border-radius: 9px;
     background-color: rgba(255, 255, 255, 0.10);
-    color: #ffffff;
+    color: rgba(255, 255, 255, 0.92);
+    font-size: 13px;
+    transition-duration: 120ms;
 }
 
-.sasayaku-button:hover {
-    background-color: rgba(255, 255, 255, 0.18);
+.sasayaku-button:hover { background-color: rgba(255, 255, 255, 0.18); }
+.sasayaku-button:active { background-color: rgba(255, 255, 255, 0.24); }
+
+.sasayaku-button-primary {
+    background-color: #0a84ff;
+    color: #ffffff;
+    font-weight: bold;
 }
+
+.sasayaku-button-primary:hover { background-color: #2b95ff; }

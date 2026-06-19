@@ -18,12 +18,12 @@ export default class SasayakuExtension extends Extension {
         this._client.connectDaemon({
             onState: (s) => this._onState(s),
             onAudioLevel: (l) => this._hud?.setLevel(l),
-            onTranscription: (t) => {
-                this._injector?.setClipboard(t);
-                this._hud?.showResult(t);
-            },
+            onTranscription: (t) => this._onTranscription(t),
             onError: (m) => this._hud?.showError(m),
         });
+
+        this._state = 'idle';
+        this._dismissed = false;
 
         this._focus = new FocusTracker();
         this._focus.enable();
@@ -47,7 +47,7 @@ export default class SasayakuExtension extends Extension {
                 this._focus.snapshot();
                 this._client.startRecording();
             },
-            onClose: () => this._hud.hide(),
+            onClose: () => this._dismiss(),
         });
 
         this._indicator = new SasayakuIndicator(this._client, {
@@ -83,7 +83,15 @@ export default class SasayakuExtension extends Extension {
 
     _onState(state) {
         console.log(`[sasayaku] _onState: ${state}`);
+        this._state = state;
         this._indicator?.setState(state);
+
+        if (state === 'recording')
+            this._dismissed = false; // a fresh recording re-arms the HUD
+
+        if (this._dismissed)
+            return; // user pressed Esc/Close — stay hidden until next recording
+
         switch (state) {
         case 'recording':
             this._hud?.showRecording();
@@ -92,8 +100,25 @@ export default class SasayakuExtension extends Extension {
             this._hud?.showProcessing();
             break;
         // 'done' is paired with TranscriptionComplete -> showResult().
-        // 'idle' leaves the HUD as-is (dismissed via Close/Paste).
         }
+    }
+
+    _onTranscription(text) {
+        // Put the text on the clipboard immediately so it is pasteable even if
+        // the user dismissed the HUD.
+        this._injector?.setClipboard(text);
+        if (this._dismissed)
+            return;
+        this._hud?.showResult(text);
+    }
+
+    // Esc / Close: hide the HUD; if still recording/processing, stop the daemon
+    // and suppress the result popup.
+    _dismiss() {
+        this._dismissed = true;
+        if (this._state === 'recording' || this._state === 'processing')
+            this._client.stopRecording();
+        this._hud?.hide();
     }
 
     disable() {

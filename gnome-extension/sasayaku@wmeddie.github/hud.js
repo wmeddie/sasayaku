@@ -1,5 +1,6 @@
 // The floating recording/processing/result overlay, drawn inside GNOME Shell
-// (so it never becomes a focus-stealing application window).
+// (so it never becomes a focus-stealing application window). Styled to match
+// the macOS dark-glass overlay: thin white waveform, colored status dot.
 import GObject from 'gi://GObject';
 import St from 'gi://St';
 import Clutter from 'gi://Clutter';
@@ -7,8 +8,9 @@ import Pango from 'gi://Pango';
 
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 
-const NUM_BARS = 28;
-const BAR_MAX_PX = 48;
+const HUD_WIDTH = 580;
+const NUM_BARS = 64;
+const WAVE_HEIGHT = 64;
 
 export const SasayakuHud = GObject.registerClass(
 class SasayakuHud extends St.BoxLayout {
@@ -18,76 +20,90 @@ class SasayakuHud extends St.BoxLayout {
             style_class: 'sasayaku-hud',
             orientation: Clutter.Orientation.VERTICAL,
             reactive: true,
-            track_hover: true,
             can_focus: true,
             visible: false,
         });
         this._cb = callbacks ?? {};
         this._levels = [];
 
-        this._statusLabel = new St.Label({
-            style_class: 'sasayaku-status',
-            text: '',
+        // Status row: colored dot + label.
+        const statusRow = new St.BoxLayout({ style_class: 'sasayaku-statusrow' });
+        this._dot = new St.Widget({
+            style_class: 'sasayaku-dot',
+            width: 10,
+            height: 10,
+            y_align: Clutter.ActorAlign.CENTER,
         });
-        this.add_child(this._statusLabel);
+        this._statusLabel = new St.Label({ style_class: 'sasayaku-status', text: '' });
+        statusRow.add_child(this._dot);
+        statusRow.add_child(this._statusLabel);
+        this.add_child(statusRow);
 
-        // Waveform
+        // Waveform — thin white bars, centered, heights driven by AudioLevel.
         this._waveform = new St.BoxLayout({ style_class: 'sasayaku-waveform' });
+        this._waveform.set_height(WAVE_HEIGHT);
         this._bars = [];
         for (let i = 0; i < NUM_BARS; i++) {
-            const bar = new St.Widget({ style_class: 'sasayaku-bar', width: 6, height: 2 });
+            const bar = new St.Widget({
+                style_class: 'sasayaku-bar',
+                width: 3,
+                height: 2,
+                y_expand: false,
+                y_align: Clutter.ActorAlign.CENTER,
+            });
             this._waveform.add_child(bar);
             this._bars.push(bar);
         }
         this.add_child(this._waveform);
 
-        // Editable transcription
-        this._entry = new St.Entry({
-            style_class: 'sasayaku-entry',
-            can_focus: true,
-            visible: false,
-        });
+        // Editable transcription.
+        this._entry = new St.Entry({ style_class: 'sasayaku-entry', can_focus: true, visible: false });
         const ct = this._entry.clutter_text;
         ct.set_single_line_mode(false);
         ct.set_activatable(false);
         ct.set_line_wrap(true);
         ct.set_line_wrap_mode(Pango.WrapMode.WORD_CHAR);
+        ct.connect('key-press-event', (_a, event) => this._onKeyPress(event));
         this.add_child(this._entry);
 
-        // Buttons
+        // Buttons. Paste is the one accented (primary) action.
         this._buttonBox = new St.BoxLayout({ style_class: 'sasayaku-buttons', visible: false });
-        this._addButton('Select All', () => {
+        this._addButton('Select All', false, () => {
             const text = ct.get_text() ?? '';
             ct.set_selection(0, text.length);
             global.stage.set_key_focus(ct);
         });
-        this._addButton('Copy', () => this._cb.onCopy?.(this.getText()));
-        this._addButton('Cut', () => {
+        this._addButton('Copy', false, () => this._cb.onCopy?.(this.getText()));
+        this._addButton('Cut', false, () => {
             this._cb.onCopy?.(this.getText());
             this.setText('');
         });
-        this._addButton('Paste', () => this._cb.onPaste?.(this.getText()));
-        this._addButton('Enter', () => this._cb.onEnter?.());
-        this._addButton('Re-record', () => this._cb.onRerecord?.());
-        this._addButton('Close', () => this._cb.onClose?.());
+        this._addButton('Paste', true, () => this._cb.onPaste?.(this.getText()));
+        this._addButton('Enter', false, () => this._cb.onEnter?.());
+        this._addButton('Re-record', false, () => this._cb.onRerecord?.());
+        this._addButton('Close', false, () => this._cb.onClose?.());
         this.add_child(this._buttonBox);
 
-        // Fixed width (St CSS does not reliably honor `width`); children wrap within.
-        this.set_width(600);
-
-        // GNOME 50: addChrome tracks the input region by default; it only
-        // accepts trackFullscreen/affectsStruts, so pass no options here.
+        this.set_width(HUD_WIDTH);
         Main.layoutManager.addChrome(this);
 
-        // Reposition whenever our size changes.
+        this.connect('key-press-event', (_a, event) => this._onKeyPress(event));
         this.connect('notify::height', () => this._reposition());
         this.connect('notify::width', () => this._reposition());
         this._monitorsId = Main.layoutManager.connect('monitors-changed', () => this._reposition());
     }
 
-    _addButton(label, onClick) {
+    _onKeyPress(event) {
+        if (event.get_key_symbol() === Clutter.KEY_Escape) {
+            this._cb.onClose?.();
+            return Clutter.EVENT_STOP;
+        }
+        return Clutter.EVENT_PROPAGATE;
+    }
+
+    _addButton(label, primary, onClick) {
         const button = new St.Button({
-            style_class: 'sasayaku-button',
+            style_class: primary ? 'sasayaku-button sasayaku-button-primary' : 'sasayaku-button',
             label,
             can_focus: true,
         });
@@ -113,35 +129,48 @@ class SasayakuHud extends St.BoxLayout {
         this._entry.clutter_text.set_text(text ?? '');
     }
 
+    _setStatus(stateClass, text) {
+        this._dot.style_class = `sasayaku-dot sasayaku-dot-${stateClass}`;
+        this._statusLabel.text = text;
+    }
+
     setLevel(level) {
-        this._levels.push(level);
+        // Log-scale like the macOS waveform so quiet speech is still visible.
+        const v = level > 0 ? Math.log10(1 + level * 100) / Math.log10(101) : 0;
+        this._levels.push(Math.max(0, Math.min(1, v)));
         if (this._levels.length > NUM_BARS)
             this._levels.shift();
         for (let i = 0; i < NUM_BARS; i++) {
-            const v = this._levels[i] ?? 0;
-            this._bars[i].set_height(Math.max(2, Math.round(Math.min(1, v) * BAR_MAX_PX)));
+            const lv = this._levels[i] ?? 0;
+            this._bars[i].set_height(Math.max(2, Math.round(lv * WAVE_HEIGHT)));
         }
     }
 
     showRecording() {
         this._levels = [];
-        this._statusLabel.text = 'Recording… speak now';
+        for (const bar of this._bars)
+            bar.set_height(2);
+        this._waveform.opacity = 255;
+        this._setStatus('recording', 'Recording — speak now');
         this._waveform.visible = true;
         this._entry.visible = false;
         this._buttonBox.visible = false;
         this._present();
+        global.stage.set_key_focus(this);
     }
 
     showProcessing() {
-        this._statusLabel.text = 'Transcribing…';
-        this._waveform.visible = false;
+        this._waveform.opacity = 90;
+        this._setStatus('processing', 'Transcribing…');
+        this._waveform.visible = true;
         this._entry.visible = false;
         this._buttonBox.visible = false;
         this._present();
+        global.stage.set_key_focus(this);
     }
 
     showResult(text) {
-        this._statusLabel.text = 'Review, then Copy / Paste / Enter';
+        this._setStatus('done', 'Review, then paste — Esc to dismiss');
         this._waveform.visible = false;
         this.setText(text);
         this._entry.visible = true;
@@ -151,11 +180,12 @@ class SasayakuHud extends St.BoxLayout {
     }
 
     showError(message) {
-        this._statusLabel.text = `⚠ ${message}`;
+        this._setStatus('error', message);
         this._waveform.visible = false;
         this._entry.visible = false;
         this._buttonBox.visible = false;
         this._present();
+        global.stage.set_key_focus(this);
     }
 
     _present() {
@@ -163,13 +193,19 @@ class SasayakuHud extends St.BoxLayout {
         this._reposition();
     }
 
-    hide() {
-        if (global.stage.get_key_focus() === this._entry.clutter_text)
+    _releaseFocus() {
+        const focus = global.stage.get_key_focus();
+        if (focus && (focus === this || this.contains(focus)))
             global.stage.set_key_focus(null);
+    }
+
+    hide() {
+        this._releaseFocus();
         super.hide();
     }
 
     destroy() {
+        this._releaseFocus();
         if (this._monitorsId)
             Main.layoutManager.disconnect(this._monitorsId);
         this._monitorsId = 0;
